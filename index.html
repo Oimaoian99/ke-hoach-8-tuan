@@ -903,6 +903,19 @@ async function gh(path, opt){
   if (!r.ok){ const e = new Error('GitHub ' + r.status); e.status = r.status; throw e; }
   return r.status === 204 ? null : r.json();
 }
+/* gộp tiến độ hai máy (chỉ dùng lần kết nối đầu): ô đã tích ở máy nào cũng giữ */
+function mergeStates(a, b){
+  const o = Object.assign({}, a, b);
+  const orMap = k => { const r = Object.assign({}, a[k]||{}); for (const x in (b[k]||{})) r[x] = !!(r[x] || b[k][x]); return r; };
+  o.days = orMap('days'); o.pj = orMap('pj');
+  o.steps = {}; new Set([...Object.keys(a.steps||{}), ...Object.keys(b.steps||{})]).forEach(k => { const x = (a.steps||{})[k]||[], y = (b.steps||{})[k]||[]; o.steps[k] = [0,1,2].map(i => !!(x[i]||y[i])); if (o.steps[k].every(Boolean)) o.days[k] = true; });
+  o.hab = {}; new Set([...Object.keys(a.hab||{}), ...Object.keys(b.hab||{})]).forEach(k => { const x = (a.hab||{})[k]||[], y = (b.hab||{})[k]||[]; o.hab[k] = [0,1,2].map(i => !!(x[i]||y[i])); });
+  const seen = new Set(); o.ev = [...(a.ev||[]), ...(b.ev||[])].filter(e => { const id = e.d+'|'+e.c+'|'+e.t; if (seen.has(id)) return false; seen.add(id); return true; });
+  o.real = Object.assign({}, a.real||{}, b.real||{}); o.gt = Object.assign({}, a.gt||{}, b.gt||{});
+  if (Array.isArray(a.ms) && Array.isArray(b.ms) && a.ms.length === b.ms.length) o.ms = b.ms.map((m,i) => Object.assign({}, m, {done: !!(m.done || a.ms[i].done)}));
+  o._at = Date.now();
+  return o;
+}
 const payload = () => JSON.stringify({at: S._at || Date.now(), dev: DEV, s: S});
 let ghBusy = false, ghAgain = false;
 async function ghPush(){
@@ -930,6 +943,11 @@ async function ghConnect(token){
   if (!id){ const list = await gh('/gists?per_page=100'); const hit = list.find(x => x.files && x.files[GH.file]); id = hit ? hit.id : ''; }
   if (!id){ const g = await gh('/gists', {method:'POST', body: JSON.stringify({description: GH.desc, public: false, files: {[GH.file]: {content: payload()}}})}); id = g.id; }
   lset(GH.gid, id); syncMode = 'gh';
+  try{
+    const g = await gh('/gists/' + id), f = g.files && g.files[GH.file];
+    const d = f ? JSON.parse(f.content || '{}') : null;
+    if (d && d.s && d.dev !== DEV){ applyState(mergeStates(d.s, S)); await ghPush(); setSync('ok'); return; }
+  }catch(e){}
   await ghPull(true);
 }
 function ghStart(){
