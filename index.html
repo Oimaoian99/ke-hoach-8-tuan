@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4338ca">
+<title>Kế hoạch 8 tuần – Unity Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f3f4f9; --card:#ffffff; --soft:#f4f5fa; --soft2:#eceef6;
+  --ink:#12131a; --ink2:#555869; --muted:#9496a8; --line:#e6e7ef;
+  --pri:#4f46e5; --pri2:#2563eb; --pri-soft:#eef0ff; --pri-ink:#3730a3;
+  --good:#16a34a; --good-soft:#e7f7ec; --warn:#d97706;
+  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#eda100; --c5:#e87ba4; --c6:#008300;
+  --shadow:0 1px 2px rgba(17,24,39,.04), 0 10px 30px -12px rgba(17,24,39,.12);
+  --r:20px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --bg:#0e0f14; --card:#171821; --soft:#1e1f2a; --soft2:#262735;
+    --ink:#f1f1f6; --ink2:#b9bacb; --muted:#7f8196; --line:#2a2b39;
+    --pri:#818cf8; --pri2:#60a5fa; --pri-soft:#232548; --pri-ink:#c7cbff;
+    --good:#22c55e; --good-soft:#15291d;
+    --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c5:#d55181; --c6:#0ca30c;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -12px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.6 "Be Vietnam Pro",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;line-height:1.3;letter-spacing:-.01em}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;overflow:hidden;color:#fff;padding:calc(26px + env(safe-area-inset-top)) 0 74px;
+  background:radial-gradient(1200px 400px at 10% -10%,rgba(255,255,255,.18),transparent 60%),linear-gradient(135deg,#4338ca 0%,#4f46e5 35%,#2563eb 75%,#0ea5e9 100%)}
+.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;border-radius:50%;background:rgba(255,255,255,.08);animation:float 9s var(--ease) infinite alternate}
+@keyframes float{to{transform:translate(-40px,30px) scale(1.08)}}
+.hero .row{display:flex;justify-content:space-between;align-items:center;gap:24px;position:relative;z-index:1}
+.hello{opacity:.85;font-size:14px;font-weight:500}
+.hero h1{font-size:28px;font-weight:800;margin:4px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:5px 12px;border-radius:99px;font-size:13px;font-weight:600}
+.chip i{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.7);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.hstats{display:flex;gap:22px;margin-top:16px;flex-wrap:wrap}
+.hstats div{font-size:13px;opacity:.9}
+.hstats b{display:block;font-size:22px;font-weight:800;opacity:1}
+.ring{width:132px;height:132px;flex:none;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .bgc{stroke:rgba(255,255,255,.2)}
+.ring .fgc{stroke:#fff;transition:stroke-dashoffset 1.2s var(--ease)}
+.ring .lbl{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1.15}
+.ring .lbl b{font-size:28px;font-weight:800;display:block}
+.ring .lbl span{font-size:11px;opacity:.85}
+
+/* ---------- NAV ---------- */
+nav.tabs{position:sticky;top:12px;z-index:30;margin:-54px auto 22px;width:max-content;max-width:calc(100% - 24px);display:flex;gap:4px;padding:5px;border-radius:16px;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(14px);box-shadow:var(--shadow);border:1px solid var(--line)}
+nav.tabs .ind{position:absolute;top:5px;bottom:5px;border-radius:12px;background:var(--pri);transition:left .35s var(--ease),width .35s var(--ease);z-index:0;box-shadow:0 6px 16px -6px var(--pri)}
+nav.tabs button{position:relative;z-index:1;border:0;background:none;padding:9px 16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--ink2);transition:color .25s}
+nav.tabs button svg{width:18px;height:18px;flex:none}
+nav.tabs button.on{color:#fff}
+nav.tabs button:active{transform:scale(.96)}
+
+/* ---------- LAYOUT ---------- */
+main{padding-bottom:60px}
+section{display:none}
+section.on{display:block;animation:secIn .45s var(--ease)}
+@keyframes secIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+.stack{display:grid;gap:18px;grid-template-columns:minmax(0,1fr);min-width:0}
+.in,select.in{min-width:0}
+.card{background:var(--card);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);border:1px solid var(--line)}
+section.on .card{animation:up .55s var(--ease) both;animation-delay:calc(var(--i,0) * 70ms)}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.ttl{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.ttl h3{font-size:17px;font-weight:700}
+.ttl .sub{color:var(--muted);font-size:13px}
+.muted{color:var(--muted)}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- TODAY ---------- */
+.today{position:relative;overflow:hidden}
+.today::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--pri),var(--pri2),#0ea5e9)}
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dhead h2{font-size:24px;font-weight:800}
+.dhead .wk{color:var(--ink2);font-size:14px;margin-top:2px}
+.tag{display:inline-block;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700;background:var(--pri-soft);color:var(--pri-ink);white-space:nowrap}
+.tag.g{background:var(--good-soft);color:var(--good)}
+.steps{margin:18px 0 6px;display:grid;gap:10px}
+.dayswap{transition:opacity .25s, transform .25s var(--ease)}
+.dayswap.outL{opacity:0;transform:translateX(-24px)} .dayswap.outR{opacity:0;transform:translateX(24px)}
+.step{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:var(--soft);transition:transform .2s var(--ease)}
+.step{cursor:pointer;align-items:center;border:1.5px solid transparent;user-select:none}
+.step:hover{transform:translateX(3px);border-color:var(--line)}
+.step:active{transform:scale(.985)}
+.step>div:nth-child(2){flex:1;min-width:0}
+.tick{width:28px;height:28px;flex:none;border-radius:50%;border:2px solid var(--line);background:var(--card);display:grid;place-items:center;transition:all .3s var(--ease)}
+.tick svg{width:15px;height:15px;opacity:0;transform:scale(.3) rotate(-20deg);transition:all .3s var(--ease)}
+.step.done{background:var(--good-soft)!important;border-color:color-mix(in srgb,var(--good) 35%,transparent)}
+.step.done .tick{background:var(--good);border-color:var(--good);animation:popc .35s var(--ease)}
+.step.done .tick svg{opacity:1;transform:none}
+.step.done .v{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+@keyframes popc{50%{transform:scale(1.25)}}
+.prog{display:flex;gap:5px;justify-content:center;margin-top:10px}
+.prog i{width:28px;height:5px;border-radius:99px;background:var(--soft2);transition:background .3s}
+.prog i.on{background:var(--good)}
+.step .n{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;font-weight:800;color:#fff;font-size:15px}
+.step .k{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.step .v{font-weight:500}
+.step.s1 .n{background:linear-gradient(135deg,#6366f1,#4f46e5)}
+.step.s2 .n{background:linear-gradient(135deg,#38bdf8,#2563eb)}
+.step.s3{background:var(--pri-soft)}
+.step.s3 .n{background:linear-gradient(135deg,#34d399,#16a34a)}
+.step.s3 .v{font-weight:700}
+.dnav{display:flex;gap:10px;margin-top:16px;align-items:center}
+.ib{width:46px;height:46px;flex:none;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;transition:transform .15s,border-color .2s}
+.ib:hover{border-color:var(--ink2)} .ib:active{transform:scale(.92)} .ib:disabled{opacity:.35;cursor:default}
+.ib svg{width:20px;height:20px}
+.btn{border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s var(--ease),background .3s,box-shadow .3s}
+.btn:active{transform:scale(.96)}
+.btn.p{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;box-shadow:0 8px 20px -8px var(--pri)}
+.btn.ok{background:var(--good);color:#fff;box-shadow:0 8px 20px -8px var(--good)}
+.btn.gh{background:var(--soft);color:var(--ink)}
+.btn.sm{padding:8px 12px;border-radius:11px;font-size:14px}
+.btn.grow{flex:1;height:46px}
+.btn svg{width:18px;height:18px}
+.chk path{stroke-dasharray:24;stroke-dashoffset:24;animation:draw .45s .1s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.back[hidden]{display:none!important}
+.back{display:block;margin:10px auto 0;background:none;border:0;color:var(--pri);font-weight:600;cursor:pointer;font-size:14px}
+
+/* confetti */
+.conf{position:fixed;pointer-events:none;width:8px;height:12px;border-radius:2px;z-index:99;animation:conf 1s var(--ease) forwards}
+@keyframes conf{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+
+/* deadlines */
+.dl{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+.dli{min-width:0}
+.pills,.bars{grid-template-columns:minmax(0,1fr)}
+.dli{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--soft)}
+.dli .d{width:48px;flex:none;text-align:center;border-radius:11px;background:var(--card);border:1px solid var(--line);padding:4px 0;line-height:1.1}
+.dli .d b{display:block;font-size:17px;font-weight:800}
+.dli .d span{font-size:10.5px;color:var(--muted);font-weight:600}
+.dli .t{flex:1;min-width:0}
+.dli .t b{display:block;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dli .t span{font-size:12.5px;color:var(--muted)}
+.cd{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--pri-soft);color:var(--pri-ink);white-space:nowrap}
+.cd.hot{background:#fee2e2;color:#b91c1c}
+@media (prefers-color-scheme: dark){.cd.hot{background:#3a1717;color:#fca5a5}}
+
+/* habit pills */
+.pills{display:grid;gap:8px}
+.pill{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);cursor:pointer;transition:all .25s var(--ease);user-select:none;font-weight:500}
+.pill .bx{width:24px;height:24px;flex:none;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;transition:all .25s var(--ease)}
+.pill .bx svg{width:14px;height:14px;opacity:0;transform:scale(.4);transition:all .25s var(--ease)}
+.pill.on{border-color:var(--good);background:var(--good-soft)}
+.pill.on .bx{background:var(--good);border-color:var(--good)}
+.pill.on .bx svg{opacity:1;transform:none}
+.pill:active{transform:scale(.98)}
+
+/* inputs */
+.in{width:100%;background:var(--soft);border:1.5px solid transparent;border-radius:13px;padding:11px 13px;outline:none;transition:border-color .2s,background .2s}
+.in:focus{border-color:var(--pri);background:var(--card)}
+.ta{resize:vertical;line-height:1.55;font:inherit;min-height:52px}
+.addrow{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:8px}
+label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rules div{padding:14px;border-radius:14px;background:var(--soft);font-size:14px}
+.rules b{display:block;margin-bottom:3px;font-size:14.5px}
+.rules em{font-style:normal;font-size:20px;display:block;margin-bottom:4px}
+
+/* ---------- ROADMAP ---------- */
+.stages{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;position:relative}
+.stg{position:relative;padding:16px;border-radius:16px;background:var(--soft);border:1.5px solid transparent;transition:transform .25s var(--ease)}
+.stg:hover{transform:translateY(-3px)}
+.stg .w{font-size:12px;font-weight:700;color:var(--muted)}
+.stg b{display:block;font-size:17px;font-weight:800;margin:4px 0 2px}
+.stg span{font-size:13px;color:var(--ink2)}
+.stg.cur{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;box-shadow:0 12px 26px -12px var(--pri)}
+.stg.cur .w,.stg.cur span{color:rgba(255,255,255,.85)}
+.stg.past{opacity:.6}
+.stg .now{position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+.stg:not(:last-child)::after{content:"";position:absolute;right:-12px;top:50%;width:12px;height:2px;background:var(--line)}
+
+.wk{border-radius:16px;transition:background .3s}
+.wk+.wk{margin-top:6px}
+.wk.cur{background:var(--pri-soft)}
+.wkh{width:100%;display:flex;gap:14px;align-items:center;padding:12px;border:0;background:none;cursor:pointer;text-align:left;border-radius:16px}
+.wkh:hover{background:var(--soft)}
+.wk.cur .wkh:hover{background:transparent}
+.wkn{width:42px;height:42px;flex:none;border-radius:13px;display:grid;place-items:center;font-weight:800;background:var(--soft2);color:var(--ink2)}
+.wk.cur .wkn{background:var(--pri);color:#fff}
+.wk.full .wkn{background:var(--good);color:#fff}
+.wkt{flex:1;min-width:0}
+.wkt b{display:block;font-weight:700}
+.wkt span{font-size:13px;color:var(--ink2)}
+.wkp{font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.chev{width:20px;height:20px;transition:transform .35s var(--ease);color:var(--muted);flex:none}
+.wk.open .chev{transform:rotate(180deg)}
+.wkb{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}
+.wk.open .wkb{grid-template-rows:1fr}
+.wkb>div{overflow:hidden}
+.days{padding:0 12px 12px 68px}
+.dr{display:flex;gap:12px;padding:10px 0;border-top:1px dashed var(--line);align-items:flex-start}
+.dr .dd{width:66px;flex:none;font-weight:700;font-size:13.5px;padding-top:1px}
+.dr .tx b{display:block;font-weight:600;font-size:14.5px}
+.dr .tx span{font-size:13px;color:var(--ink2)}
+.dr.ok .tx b,.dr.ok .dd{color:var(--muted);text-decoration:line-through}
+.dr.isT .dd{color:var(--pri)}
+
+/* custom checkbox */
+.cb{appearance:none;-webkit-appearance:none;width:22px;height:22px;flex:none;border-radius:7px;border:2px solid var(--line);background:var(--card);cursor:pointer;display:grid;place-items:center;transition:all .2s var(--ease);margin:0}
+.cb::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) scale(0);transition:transform .25s var(--ease);margin-top:-2px}
+.cb:checked{background:var(--good);border-color:var(--good)}
+.cb:checked::after{transform:rotate(45deg) scale(1)}
+.cb:active{transform:scale(.88)}
+
+/* ---------- PROJECT ---------- */
+.pinfo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pinfo .full{grid-column:1/-1}
+.tl{position:relative;padding-left:8px}
+.tl::before{content:"";position:absolute;left:19px;top:14px;bottom:14px;width:2px;background:var(--line)}
+.ms{position:relative;display:flex;gap:12px;align-items:flex-start;padding:8px 0}
+.ms .dot{margin-top:6px}
+.ms .body{flex:1;min-width:0;display:grid;gap:4px}
+.ms .dot{position:relative;z-index:1;width:24px;height:24px;flex:none;border-radius:50%;background:var(--card);border:3px solid var(--line);transition:all .3s var(--ease)}
+.ms.done .dot{background:var(--good);border-color:var(--good)}
+.ms.next .dot{border-color:var(--pri);box-shadow:0 0 0 5px var(--pri-soft)}
+.ms .nm{min-width:0}
+.ms .nm input{border:0;background:transparent;padding:6px 8px;border-radius:9px;width:100%;font-weight:600;outline:none}
+.ms .nm input:focus{background:var(--soft)}
+.ms.done .nm input{text-decoration:line-through;color:var(--muted)}
+.ms input[type=date]{justify-self:start;margin-left:8px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:6px 8px;font-size:13.5px;outline:none}
+.ms .rm{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:8px}
+.ms .rm:hover{background:var(--soft);color:var(--ink)}
+.todo{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px dashed var(--line)}
+.todo:first-child{border-top:0}
+.todo .tx{flex:1}
+.todo .tx b{font-weight:600}
+.todo.ok .tx b{color:var(--muted);text-decoration:line-through}
+.todo .when{font-size:12px;font-weight:700;color:var(--pri-ink);background:var(--pri-soft);padding:3px 9px;border-radius:99px;white-space:nowrap}
+
+/* ---------- GOALS ---------- */
+.key3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 6px}
+.key3 div{padding:16px;border-radius:16px;background:var(--soft)}
+.key3 b{display:block;font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--pri),var(--pri2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.key3 span{font-size:13.5px;color:var(--ink2)}
+.gc{border-radius:18px;background:var(--soft);padding:18px;margin-top:14px;position:relative;overflow:hidden}
+.gc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--cc)}
+.gc h4{font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.gc h4 i{width:10px;height:10px;border-radius:50%;background:var(--cc)}
+.gcols{display:grid;grid-template-columns:1fr 1.25fr .95fr;gap:16px}
+.gcols .ml{white-space:pre-line;font-size:14.5px;margin-top:4px}
+[contenteditable]{outline:none;border-radius:8px;padding:2px 4px;margin:-2px -4px;transition:background .2s}
+[contenteditable]:hover{background:color-mix(in srgb,var(--pri) 8%,transparent)}
+[contenteditable]:focus{background:var(--card);box-shadow:0 0 0 2px var(--pri)}
+.dlist div{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.dlist div:last-child{border-bottom:0}
+.dlist b{white-space:nowrap}
+.dlist .past{color:var(--muted)}
+.real{display:flex;gap:10px;align-items:center;margin-top:14px}
+.real span{font-size:13px;font-weight:700;color:var(--ink2);white-space:nowrap}
+.real .in{background:var(--card)}
+.gtop{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+.badge{font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:99px}
+.badge.ok{background:var(--good-soft);color:var(--good)} .badge.no{background:var(--soft);color:var(--muted)}
+
+/* ---------- ACHIEVEMENTS ---------- */
+.bars{display:grid;gap:14px}
+.br .l{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+.br .l span{color:var(--muted);font-weight:600}
+.br .t{position:relative;height:12px;border-radius:99px;background:var(--soft2)}
+.br .t>div{height:100%;border-radius:99px;background:var(--cc);width:0;transition:width 1s var(--ease)}
+.br .t .tg{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink2);opacity:.5;border-radius:2px}
+.evi{display:flex;gap:12px;padding:12px 0;border-top:1px dashed var(--line);align-items:flex-start;animation:up .4s var(--ease) both}
+.evi:first-child{border-top:0}
+.evi .c{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:color-mix(in srgb,var(--cc) 15%,transparent);color:var(--ink);white-space:nowrap}
+.evi .tx{flex:1}
+.evi .dt{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.evi button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px;border-radius:8px;padding:0 6px}
+.evi button:hover{background:var(--soft);color:var(--ink)}
+
+/* sync modal */
+#sync{cursor:pointer}
+#sync:hover{background:rgba(255,255,255,.26)}
+.modal{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:16px;background:rgba(10,12,24,.45);backdrop-filter:blur(4px)}
+.modal.show{display:grid;animation:secIn .3s var(--ease)}
+.modal .box{width:100%;max-width:480px;max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);border:1px solid var(--line)}
+.modal h3{font-size:19px;font-weight:800;margin-bottom:6px}
+.modal ol{padding-left:20px;margin:10px 0 14px}
+.modal li{margin:6px 0;font-size:14.5px}
+.modal .row2{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.modal .st{font-size:13.5px;margin-top:10px;color:var(--ink2);min-height:20px}
+.modal a{color:var(--pri);font-weight:600}
+.modal .x{float:right;border:0;background:var(--soft);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:18px;color:var(--ink2)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,40px);opacity:0;background:var(--ink);color:var(--card);padding:11px 18px;border-radius:14px;font-weight:600;font-size:14px;z-index:100;transition:all .35s var(--ease);pointer-events:none;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.toast.show{transform:translate(-50%,0);opacity:1}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:820px){
+  .wrap{padding:0 14px}
+  .hero{padding:calc(20px + env(safe-area-inset-top)) 0 26px}
+  .hero h1{font-size:22px}
+  .ring{width:96px;height:96px}
+  .ring .lbl b{font-size:21px}
+  .hstats{gap:16px}
+  .hstats b{font-size:18px}
+  nav.tabs{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;width:auto;max-width:none;border-radius:20px 20px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));justify-content:space-around;border-bottom:0}
+  nav.tabs button{flex-direction:column;gap:3px;padding:7px 4px;font-size:11px;flex:1}
+  nav.tabs button svg{width:22px;height:22px}
+  nav.tabs .ind{top:6px;bottom:calc(6px + env(safe-area-inset-bottom))}
+  main{padding:16px 0 calc(100px + env(safe-area-inset-bottom))}
+  .toast{bottom:calc(90px + env(safe-area-inset-bottom))}
+  .grid2,.rules,.key3,.gcols,.pinfo,.gtop{grid-template-columns:minmax(0,1fr)}
+  .stages{grid-template-columns:repeat(4,78%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin:0 -2px}
+  .stg{scroll-snap-align:start}
+  .card{padding:18px;border-radius:18px}
+  .dhead h2{font-size:21px}
+  .days{padding:0 8px 10px 12px}
+  .addrow{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+@media print{nav.tabs,.hero,.noprint{display:none!important}section{display:none!important}section.on{display:block!important}body{background:#fff}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap row">
+    <div>
+      <div class="hello" id="hello">Xin chào</div>
+      <h1>Kế hoạch 8 tuần</h1>
+      <span class="chip"><i></i><span id="hChip">Tuần 0</span></span> <span class="chip" id="sync" style="margin-top:6px">…</span>
+      <div class="hstats">
+        <div><b id="hDays">–</b>ngày còn lại</div>
+        <div><b id="hDone">–</b>ngày đã xong</div>
+        <div><b id="hEv">–</b>thành tích</div>
+      </div>
+    </div>
+    <div class="ring" aria-label="Tiến độ">
+      <svg viewBox="0 0 120 120" width="100%" height="100%"><circle class="bgc" cx="60" cy="60" r="52" fill="none" stroke-width="10"/><circle class="fgc" id="ringFg" cx="60" cy="60" r="52" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
+      <div class="lbl"><div><b id="ringPct">0%</b><span>hoàn thành</span></div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" id="nav"><div class="ind" id="ind"></div></nav>
+
+<main class="wrap">
+
+<!-- ===== HÔM NAY ===== -->
+<section id="s-today">
+  <div class="grid2">
+    <div class="stack">
+      <div class="card today" style="--i:0" id="todayCard">
+        <div class="dhead">
+          <div><div class="eyebrow" id="dEye">Hôm nay</div><h2 id="dTitle">–</h2><div class="wk" id="dWeek"></div></div>
+          <span class="tag" id="dTag">Tuần 0</span>
+        </div>
+        <div class="dayswap" id="swap">
+          <div class="steps">
+            <div class="step s1" data-s="0" role="checkbox" tabindex="0"><div class="n">1</div><div><div class="k">Làm</div><div class="v" id="dDo"></div></div><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+            <div class="step s2" data-s="1" role="checkbox" tabindex="0"><div class="n">2</div><div><div class="k">Học</div><div class="v" id="dLearn"></div></div><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+            <div class="step s3" data-s="2" role="checkbox" tabindex="0"><div class="n">3</div><div><div class="k">Đạt được</div><div class="v" id="dRes"></div></div><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+          </div>
+        </div>
+        <div class="dnav">
+          <button class="ib" id="prev" aria-label="Ngày trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="btn p grow" id="doneBtn">Hoàn thành ngày này</button>
+          <button class="ib" id="next" aria-label="Ngày sau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <div class="prog" id="prog"><i></i><i></i><i></i></div>
+        <button class="back" id="back" hidden>↺ Về hôm nay</button>
+      </div>
+
+      <div class="card" style="--i:2">
+        <div class="ttl"><h3>Ghi thành tích hôm nay</h3><span class="sub">có số càng tốt</span></div>
+        <div class="addrow">
+          <input class="in" id="evText" placeholder="VD: Tối ưu màn Inventory, từ 38 lên 55 khung hình/giây">
+          <select class="in" id="evCrit"></select>
+          <button class="btn p" id="evAdd">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card" style="--i:1">
+        <div class="ttl"><h3>Deadline sắp tới</h3></div>
+        <div class="dl" id="upc"></div>
+      </div>
+      <div class="card" style="--i:3">
+        <div class="ttl"><h3>Cuối ngày</h3><span class="sub" id="habCount"></span></div>
+        <div class="pills" id="habits"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="--i:4;margin-top:18px">
+    <div class="ttl"><h3>3 điều luôn nhớ</h3></div>
+    <div class="rules">
+      <div><em>⏱</em><b>Đúng hạn là số 1</b>Việc chính trễ thì làm thêm gì cũng không bù được.</div>
+      <div><em>📣</em><b>Báo sớm</b>Thấy có thể trễ → báo sếp ngay, kèm cách xử lý.</div>
+      <div><em>📊</em><b>Có con số</b>Mỗi việc tốt nên có một con số để chứng minh.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LỘ TRÌNH ===== -->
+<section id="s-plan">
+  <div class="card" style="--i:0">
+    <div class="ttl"><h3>4 chặng</h3><span class="sub">ô xanh = chặng hiện tại</span></div>
+    <div class="stages" id="stages"></div>
+  </div>
+  <div class="card" style="--i:1;margin-top:18px">
+    <div class="ttl"><h3>Từng tuần</h3><span class="sub">bấm để xem từng ngày</span></div>
+    <div id="weeks"></div>
+  </div>
+</section>
+
+<!-- ===== DỰ ÁN ===== -->
+<section id="s-proj">
+  <div class="grid2">
+    <div class="stack">
+      <div class="card" style="--i:0">
+        <div class="ttl"><h3>Dự án của bạn</h3></div>
+        <div class="pinfo">
+          <label class="f full">Tên dự án / tính năng<input class="in" id="pName" placeholder="VD: Hệ thống Inventory mới"></label>
+          <label class="f full">Mục tiêu của dự án (có số)<textarea class="in ta" id="pGoal" rows="5"></textarea></label>
+          <label class="f full">Thế nào là "xong"? (đủ tất cả điều kiện)<textarea class="in ta" id="pDone" rows="7"></textarea></label>
+        </div>
+      </div>
+      <div class="card" style="--i:2">
+        <div class="ttl"><h3>Việc cần làm với dự án</h3><span class="sub" id="pjCount"></span></div>
+        <div id="todos"></div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card" style="--i:1">
+        <div class="ttl"><h3>Hạng mục & ngày hoàn thành</h3><span class="sub">sửa theo thực tế</span></div>
+        <div class="tl" id="ms"></div>
+        <button class="btn gh sm" id="msAdd" style="margin-top:8px">+ Thêm hạng mục</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MỤC TIÊU ===== -->
+<section id="s-goal">
+  <div class="card noprint" style="--i:0">
+    <div class="gtop">
+      <label class="f">Họ tên<input class="in" id="gName" placeholder="Tên của bạn"></label>
+      <label class="f">Ngày đã chốt với sếp<input class="in" type="date" id="gDate"></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn p" id="gCopy">Sao chép gửi sếp</button>
+        
+      </div>
+    </div>
+    <p class="muted" style="font-size:13px;margin:10px 0 0">Bấm vào chữ bên dưới để sửa trực tiếp. <a href="#" id="gReset" style="color:var(--pri)">Về bản gốc</a></p>
+  </div>
+  <div class="card" style="--i:1;margin-top:18px" id="goal"></div>
+</section>
+
+<!-- ===== THÀNH TÍCH ===== -->
+<section id="s-ev">
+  <div class="grid2">
+    <div class="card" style="--i:0">
+      <div class="ttl"><h3>Thành tích theo tiêu chí</h3><span class="sub">vạch = cần ≥ 3</span></div>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="card" style="--i:1">
+      <div class="ttl"><h3>Danh sách</h3><span class="sub" id="evCount"></span></div>
+      <div id="evList"></div>
+    </div>
+  </div>
+  <p class="muted noprint" style="font-size:13px;margin-top:18px;text-align:center" id="syncNote"></p>
+</section>
+
+</main>
+<div class="toast" id="toast"></div>
+<div class="modal" id="ghModal" role="dialog" aria-modal="true" aria-labelledby="ghTitle">
+  <div class="box">
+    <button class="x" id="ghClose" aria-label="Đóng">×</button>
+    <h3 id="ghTitle">Đồng bộ tiến độ qua GitHub</h3>
+    <p class="muted" style="margin:0;font-size:14px">Lưu tiến độ vào một ghi chú bí mật (Gist) trên GitHub của bạn. Mở trang ở máy nào cũng thấy cùng tiến độ.</p>
+    <ol>
+      <li>Bấm <a href="https://github.com/settings/tokens/new?scopes=gist&description=Ke%20hoach%208%20tuan" target="_blank" rel="noopener">tạo token GitHub</a> (đăng nhập GitHub nếu được hỏi). Ô <b>gist</b> đã được tích sẵn.</li>
+      <li>Ở mục <b>Expiration</b> chọn <b>90 days</b> hoặc <b>No expiration</b>, kéo xuống cuối bấm <b>Generate token</b>.</li>
+      <li>Sao chép mã bắt đầu bằng <b>ghp_</b>, dán vào ô dưới rồi bấm <b>Kết nối</b>.</li>
+      <li>Làm lại bước 3 trên mỗi máy (điện thoại, máy tính) với <b>cùng một token</b>.</li>
+    </ol>
+    <input class="in" id="ghToken" type="password" placeholder="Dán token ghp_… vào đây" autocomplete="off">
+    <div class="row2">
+      <button class="btn p" id="ghGo">Kết nối</button>
+      <button class="btn gh" id="ghOff">Ngắt trên máy này</button>
+    </div>
+    <div class="st" id="ghSt"></div>
+    <p class="muted" style="font-size:12.5px;margin:8px 0 0">Token chỉ có quyền đọc/ghi Gist, không đụng được vào code hay repo. Token lưu trong trình duyệt của máy này, không gửi đi đâu ngoài GitHub.</p>
+  </div>
+</div>
+
+<script>
+/* ================= DỮ LIỆU ================= */
+const START = '2026-11-19';
+const CRIT = [['c1','Sản phẩm'],['c2','Chuyên môn'],['c3','AI'],['c4','Văn hoá'],['c5','Học hỏi'],['c6','Teamwork']];
+const STAGES = [['Tuần 0','Chốt mục tiêu','Gặp sếp, thống nhất mục tiêu',0,0],['Tuần 1–2','Tạo niềm tin','Đúng hạn, nắm chắc dự án',1,2],['Tuần 3–5','Tạo dấu ấn','Dự án + tối ưu + AI',3,5],['Tuần 6–8','Chứng minh','Hoàn thành hạng mục, chia sẻ, trình bày',6,8]];
+const WEEKS = [
+  ['Chốt mục tiêu, làm rõ dự án','Hiểu 6 tiêu chí','Mục tiêu + phạm vi dự án đã rõ'],
+  ['Nắm chắc dự án, làm đúng hạn','Kiến trúc code dự án','Task đã chia nhỏ + ước lượng'],
+  ['Thiết kế kỹ thuật + đo hiệu năng','Unity Profiler','Tài liệu thiết kế đã chốt · Check-in #1'],
+  ['Hoàn thành hạng mục 1','Bộ nhớ, Addressables, pooling','Hạng mục 1 xong + demo'],
+  ['Tối ưu có số + dùng AI','AI + kiểm thử tự động','Số trước/sau · Check-in #2'],
+  ['Hoàn thành hạng mục 2 + tool cho team','Công cụ trong Unity Editor, build tự động','Hạng mục 2 xong · tester kiểm tra'],
+  ['Hoàn thành hạng mục 3 + chia sẻ AI','Tối ưu hình ảnh mobile','Hạng mục 3 xong · Check-in #3'],
+  ['Tổng kết dự án + chia sẻ kỹ thuật','Kiến trúc mở rộng','Tổng kết dự án · góp ý'],
+  ['Tổng hợp và trình bày','Ôn tập','Buổi đánh giá']
+];
+const DAYS = [
+  [0,'',"Điền thông tin dự án (tab Dự án), sửa bản mục tiêu","Tự nhận 1 điểm yếu ở mỗi tiêu chí","Bản mục tiêu nháp"],
+  [0,'',"Làm rõ dự án: phạm vi, danh sách hạng mục, tiêu chí \"xong\", ngày hoàn thành từng hạng mục","Cách đặt câu hỏi để làm rõ yêu cầu","Phạm vi + ngày hoàn thành đã rõ"],
+  [0,'T7–CN',"(Tuỳ chọn) Đọc lại yêu cầu / tài liệu thiết kế game của dự án","Xem cấu trúc thư mục liên quan dự án","Sẵn sàng cho tuần 1"],
+  [1,'',"Chia dự án thành task ≤ 1 ngày, ước lượng từng task","Cấu trúc code phần dự án sẽ đụng vào","Danh sách task + ước lượng"],
+  [1,'',"Làm task dự án; dùng AI tóm tắt code cũ liên quan","Các hệ thống liên quan nói chuyện với nhau ra sao","Sơ đồ phần code liên quan"],
+  [1,'',"Làm task; chơi Tricky Story 2 trong 30 phút, chú ý phần dự án chạm tới","Vòng lặp chơi chính của game, đọc tài liệu thiết kế game phần dự án","Ghi chú về game"],
+  [1,'',"Làm task; bấm giờ 2–3 việc hay lặp lại","Xem số liệu game: tỉ lệ người chơi quay lại, tỉ lệ crash","Số đo \"trước khi dùng AI\""],
+  [1,'',"Gửi sếp cập nhật tuần (5 dòng)","Liệt kê rủi ro kỹ thuật của dự án","Danh sách rủi ro dự án"],
+  [2,'',"Viết tài liệu thiết kế kỹ thuật: bài toán, phạm vi","Dùng Unity Profiler đo CPU","Tài liệu thiết kế: phần bài toán"],
+  [2,'',"Tài liệu thiết kế: các phương án, lý do chọn, cách kiểm tra","Đo hiệu năng trên điện thoại thật","Tài liệu thiết kế bản nháp"],
+  [2,'',"Gửi tài liệu thiết kế cho sếp; đo phần nặng nhất của dự án","Tìm chỗ tạo rác bộ nhớ mỗi khung hình","Danh sách chỗ chậm"],
+  [2,'',"Sửa tài liệu thiết kế theo góp ý; góp ý code cho đồng nghiệp 3 lần","Công cụ đo bộ nhớ (Memory Profiler) và xem từng lần vẽ (Frame Debugger)","Báo cáo 5 chỗ chậm"],
+  [2,'',"Check-in #1 với sếp; cập nhật tuần","Ghi 1 trang: học gì, dùng vào đâu","Tài liệu thiết kế đã chốt"],
+  [3,'',"Làm phần lõi dự án","Bộ nhớ trong Unity","Phần lõi chạy được"],
+  [3,'',"Làm dự án; soạn danh sách kiểm tra khi góp ý code","Addressables: tải và giải phóng tài nguyên","Danh sách kiểm tra bản 1"],
+  [3,'',"Làm dự án; tự test trên máy thật; chơi 1 game tile match đang top","Tái sử dụng object thay vì tạo mới (pooling) – hợp cho các ô tile","Không lỗi trên máy thật"],
+  [3,'',"Hoàn thành hạng mục 1, demo cho sếp","Áp dụng tái sử dụng object vào dự án nếu cần","Hạng mục 1 xong đúng ngày"],
+  [3,'',"Gửi danh sách kiểm tra cho team; cập nhật tuần","Ghi 1 trang tổng kết","Team có danh sách kiểm tra khi góp ý code"],
+  [4,'',"Đo hiệu năng dự án, chọn 1 chỗ chậm nhất","Cách đo cho chuẩn","Số \"trước\""],
+  [4,'',"Tối ưu; nhờ AI viết kiểm thử tự động rồi tự kiểm tra lại","Viết kiểm thử tự động bằng Unity Test Framework","Bản tối ưu + 2 bài kiểm thử"],
+  [4,'',"Đo lại, ghi số trước/sau","Viết quy tắc dự án cho AI","Bảng trước/sau"],
+  [4,'',"Thử cho AI kết nối thẳng vào Unity Editor để làm task dự án","Giới hạn và an toàn khi dùng AI","Số đo \"sau khi dùng AI\""],
+  [4,'',"Check-in #2 với sếp; cập nhật tuần","Ghi 1 trang tổng kết","Nháp hướng dẫn dùng AI"],
+  [5,'',"Hỏi game designer và tester cần gì để kiểm tra/chỉnh dự án dễ hơn","Viết công cụ trong Unity Editor","Chọn được tool cần làm"],
+  [5,'',"Làm dự án; làm tool bản đầu","Hoàn tác (Undo), thêm menu, tạo asset bằng code","Tool chạy được"],
+  [5,'',"Đưa tool cho game designer và tester dùng thử","Viết script build game","Có người dùng tool"],
+  [5,'',"Hoàn thành hạng mục 2, bàn giao tester kiểm tra","Build tự động mỗi khi có code mới","Hạng mục 2 xong đúng ngày"],
+  [5,'',"Sửa lỗi tester báo; cập nhật tuần","Ghi 1 trang tổng kết","Hướng dẫn AI hoàn chỉnh"],
+  [6,'',"Hoàn thiện hạng mục 3, sửa lỗi tester báo","Giảm số lần vẽ (draw call), gộp vẽ (batching)","Không còn bug chặn"],
+  [6,'',"Hoàn thành hạng mục 3, bàn giao","Gộp ảnh (atlas), giảm vẽ chồng, tách canvas giao diện","Hạng mục 3 xong đúng ngày"],
+  [6,'',"Sửa bug của các hạng mục đã bàn giao; chuẩn bị chia sẻ AI","Shader nhẹ và nén ảnh cho điện thoại","Slide chia sẻ"],
+  [6,'',"Chia sẻ AI cho team; check-in #3 với sếp","Dùng Frame Debugger trên màn thật","Biết còn thiếu gì"],
+  [6,'',"Nghỉ Tết Dương lịch","—","—"],
+  [7,'',"Sửa điểm còn thiếu; nhờ 3–5 người góp ý","Chia code thành các phần độc lập","Đã xin góp ý"],
+  [7,'',"Thu số liệu dự án: đúng ngày, bug, hiệu năng","Dùng ScriptableObject làm file cấu hình","Bảng số liệu dự án"],
+  [7,'',"Viết tổng kết dự án 1 trang: làm gì, số liệu, bài học","Cách giảm phụ thuộc giữa các class","Tổng kết dự án"],
+  [7,'',"Chia sẻ kỹ thuật về dự án cho team","Đề xuất cải thiện 1 module","Buổi chia sẻ xong"],
+  [7,'',"Ghi lại góp ý nhận được; cập nhật tuần","Ghi 1 trang tổng kết","Có góp ý đồng nghiệp"],
+  [8,'',"Xem lại thành tích, tìm tiêu chí còn thiếu","Ôn lại các ghi chú","Biết còn thiếu gì"],
+  [8,'',"Bù vào tiêu chí còn yếu","Ôn phần còn yếu","Mỗi tiêu chí ≥ 3 thành tích"],
+  [8,'',"Làm slide trình bày","Mỗi slide 1 ý + 1 con số","Slide bản 1"],
+  [8,'',"Tập trình bày 1–2 lần","—","Trình bày gọn trong 15 phút"],
+  [8,'',"Gặp sếp đánh giá","—","Hoàn thành"]
+];
+const HABITS = ['Đã cập nhật tiến độ cho sếp/team','Đã ghi ít nhất 1 thành tích','Đã chơi game công ty 20 phút'];
+/* mốc dự án mặc định: [tên, tuần, ngày trong tuần] */
+const MS_DEF = [['Làm rõ phạm vi & ngày hoàn thành',0,1],['Hoàn thành tài liệu thiết kế kỹ thuật',2,4],['Hoàn thành hạng mục 1',3,3],['Hoàn thành hạng mục 2',5,3],['Hoàn thành hạng mục 3',6,1],['Tổng kết dự án (số liệu + bài học)',7,2]];
+const MS_ALIAS = {'Làm rõ phạm vi, hạng mục & ngày hoàn thành':0,'Chốt phạm vi & tiêu chí "xong" với sếp':0,'Chốt danh sách hạng mục & ngày hoàn thành với sếp':0,'Chốt thiết kế kỹ thuật (TDD)':1,'Hoàn thành thiết kế kỹ thuật (TDD)':1,'Mốc 1 – phần lõi chạy được':2,'Mốc 2 – đủ tính năng, bàn giao QA':3,'Release':4,'Đo kết quả sau release':5};
+const TODOS = [
+  ['Làm rõ phạm vi: dự án gồm những hạng mục nào, phần nào không làm','Tuần 0'],
+  ['Làm rõ "xong" nghĩa là gì cho từng hạng mục (tiêu chí nghiệm thu)','Tuần 0'],
+  ['Làm rõ ngày hoàn thành của từng hạng mục','Tuần 0'],
+  ['Làm rõ phần đang chờ người khác: hoạ sĩ, game designer, server, tester… và khi nào có','Tuần 0–1'],
+  ['Làm rõ cách phần đố mẹo và phần tile match nối với nhau: luồng màn, phần thưởng, độ khó','Tuần 0–1'],
+  ['Làm rõ cách tạo màn tile match: thiết kế tay hay sinh tự động, cách đảm bảo màn luôn giải được','Tuần 1'],
+  ['Làm rõ rủi ro kỹ thuật lớn nhất và cách xử lý','Tuần 1'],
+  ['Chia mỗi hạng mục thành task ≤ 1 ngày, ước lượng giờ từng task','Tuần 1'],
+  ['Viết tài liệu thiết kế kỹ thuật 1–2 trang: cách làm, rủi ro, cách kiểm tra','Tuần 2'],
+  ['Cập nhật tiến độ 2 lần/tuần: xong gì, còn gì, rủi ro gì','Liên tục'],
+  ['Tự test trên máy thật trước khi bàn giao','Mỗi hạng mục'],
+  ['Đo hiệu năng và dung lượng (nhiều ô trên màn, ảnh, âm thanh), tối ưu chỗ nặng nhất, ghi số trước/sau','Tuần 4'],
+  ['Bàn giao tester, sửa hết lỗi nghiêm trọng','Mỗi hạng mục'],
+  ['Hoàn thành đúng ngày — có nguy cơ trễ thì báo trước ≥ 2 ngày','Mỗi hạng mục'],
+  ['Tổng kết dự án: đã làm gì, số liệu, bài học','Tuần 7']
+];
+const INTRO = 'Em đã nhận góp ý của anh/chị. Dưới đây là mục tiêu 8 tuần của em: mỗi mục tiêu có con số để đo, việc cụ thể và deadline. Em sẽ báo số thực tế ở mỗi buổi check-in.';
+const GOALS = [
+ {c:'c2', name:'Chuyên môn', num:'– 100% hạng mục dự án xong đúng ngày đã chốt\n– ≥ 90% task xong đúng hạn\n– Bug bị mở lại ≤ 10%\n– Lệch ước lượng ≤ 20%\n– 1 tối ưu cải thiện ≥ 20% (khung hình/giây, thời gian tải hoặc bộ nhớ)', act:'– Ước lượng giờ trước mỗi task, ghi giờ thực tế\n– Viết tài liệu thiết kế kỹ thuật trước khi code\n– Đo hiệu năng trên máy thật, tối ưu 1 chỗ chậm nhất\n– Góp ý code cho đồng nghiệp 3 lần mỗi tuần', dl:'ms'},
+ {c:'c3', name:'Ứng dụng AI', num:'– Giảm ≥ 30% thời gian cho 3 loại việc lặp lại\n– ≥ 3 người trong team dùng hướng dẫn AI', act:'– Bấm giờ 3 việc lặp lại khi chưa dùng AI\n– Dùng AI viết test, tool, đọc code cũ; bấm giờ lại\n– Viết hướng dẫn dùng AI cho team\n– Chia sẻ 1 buổi', dl:[['Số đo "trước AI"',1,3],['Số đo "sau AI"',4,3],['Hướng dẫn AI hoàn chỉnh',5,4],['Buổi chia sẻ AI',6,3]]},
+ {c:'c1', name:'Am hiểu sản phẩm', num:'– 3 đề xuất cải tiến có lý do gửi quản lý sản phẩm / game designer\n– ≥ 1 đề xuất được đưa vào danh sách việc sẽ làm', act:'– Chơi game công ty 20 phút mỗi ngày\n– Viết 1 trang ghi chú: vòng lặp chơi chính, người chơi, 3 chỉ số chính\n– Chơi 2 game tile match và 1 game đố mẹo đang đứng top cửa hàng', dl:[['Ghi chú về game',1,2],['Ghi chú đối thủ',3,4],['Gửi 3 đề xuất',5,4]]},
+ {c:'c4', name:'Văn hoá (Nhiệt huyết, Khát vọng)', num:'Nhiệt huyết – chủ động, sẵn sàng góp sức:\n– ≥ 2 việc khó hoặc gấp chủ động nhận\n– ≥ 3 lần giúp ngoài phần việc của mình (hỗ trợ đồng nghiệp, chơi thử game, góp ý thiết kế)\nKhát vọng – muốn làm tốt hơn yêu cầu:\n– ≥ 3 lần làm vượt yêu cầu (xong sớm, ít lỗi hơn, làm thêm tool)\n– Xin góp ý ≥ 3 người, sửa theo trong 48 giờ', act:'– Có việc khó hoặc gấp: giơ tay nhận trước\n– Thấy đồng nghiệp vướng: hỏi "mình giúp được gì?"\n– Mỗi hạng mục tự hỏi: làm sao tốt hơn yêu cầu một chút?\n– Mỗi lần làm được: ghi vào tab Thành tích, chọn tiêu chí Văn hoá', dl:[['Nhận việc khó thứ 1',3,4],['Vượt yêu cầu lần thứ 1',4,4],['Xin góp ý 3 người',7,4],['Đủ 2 việc khó + 3 lần vượt yêu cầu',8,3]]},
+ {c:'c5', name:'Học hỏi và cải tiến', num:'– 7 chủ đề học, mỗi chủ đề 1 ghi chú + 1 lần áp dụng\n– 1 cải tiến quy trình được team áp dụng', act:'– Học 3–4 giờ/tuần theo lộ trình\n– Sau mỗi chủ đề viết 1 trang: học gì, dùng vào đâu\n– Đề xuất danh sách kiểm tra khi góp ý code cho team', dl:[['Danh sách kiểm tra góp ý code',3,4],['Đề xuất cải tiến quy trình',5,3],['Xong 7 chủ đề',7,4]]},
+ {c:'c6', name:'Teamwork', num:'– Tóm tắt tuần gửi sếp đủ 8/8 tuần\n– Rủi ro trễ hạn báo trước ≥ 2 ngày\n– Góp ý code đồng nghiệp trong ≤ 24 giờ\n– 1 tool cho game designer/tester có người dùng\n– 2 buổi chia sẻ', act:'– Cuối ngày cập nhật tiến độ lên ticket / nhóm chat\n– Thứ Sáu gửi sếp tóm tắt 5 dòng: xong gì, con số, rủi ro, tuần sau làm gì, cần hỗ trợ gì\n– Thấy nguy cơ trễ: báo ngay kèm cách xử lý\n– Hỏi game designer/tester cần gì, làm tool cho việc đó\n– Chia sẻ về AI và kỹ thuật dự án cho team', dl:[['Tóm tắt tuần đầu tiên',1,4],['Tool cho game designer/tester',5,2],['Chia sẻ kỹ thuật',7,3],['Đủ 8/8 tóm tắt tuần',8,4]]}
+];
+
+/* ================= TRẠNG THÁI ================= */
+const KEY = 'plan8w_v3';
+let S = {steps:{}, days:{}, hab:{}, ev:[], gt:{}, real:{}, pj:{}, ms:null, gName:'', gDate:'', pName:'', pGoal:'', pDone:''};
+try{ const old = localStorage.getItem('plan8w_simple_v1'); const r = localStorage.getItem(KEY) || old; if (r){ const o = JSON.parse(r); if (o.gProj && !o.pName) o.pName = o.gProj; S = Object.assign(S, o); } }catch(e){}
+const P_DEF = {
+  pName:'Tricky Story 3',
+  pGoal:'1. Tiến độ: 100% hạng mục xong đúng ngày đã chốt\n2. Chất lượng: tối đa 2 lỗi nghiêm trọng khi bàn giao, lỗi bị mở lại ≤ 10%\n3. Dung lượng: game tăng không quá 10% so với lúc bắt đầu\n4. Cải tiến: ≥ 1 điểm tốt hơn ≥ 20% so với Tricky Story 2 (thời gian tải màn, dung lượng, hoặc thời gian làm 1 màn mới)',
+  pDone:'Một hạng mục chỉ tính là XONG khi đạt đủ cả 5 điều kiện:\n1. Đúng chức năng: làm đủ 100% yêu cầu trong tài liệu thiết kế game\n2. Chơi được: chơi hết từ đầu đến cuối mọi màn (đố mẹo và tile match), 0 lỗi\n3. Tile match giải được: 100% màn có lời giải, không bị kẹt ô\n4. Qua tester: tối đa 2 lỗi nghiêm trọng (đã có ngày sửa), lỗi nhỏ còn lại ≤ 3\n5. Không làm nặng game: dung lượng tăng ≤ 10%, thời gian tải màn không chậm hơn bản trước'
+};
+['pName','pGoal','pDone'].forEach(k => { if (!S[k]) S[k] = P_DEF[k]; });
+const P_OLD = {pGoal:['1. Tiến độ: 100% hạng mục xong đúng ngày đã chốt\n2. Chất lượng: 0 lỗi nghiêm trọng khi bàn giao, lỗi bị mở lại ≤ 10%\n3. Dung lượng: game tăng không quá 10% so với lúc bắt đầu\n4. Cải tiến: ≥ 1 điểm tốt hơn ≥ 20% so với Tricky Story 2 (thời gian tải màn, dung lượng, hoặc thời gian làm 1 màn mới)','Hoàn thành phần việc của em trong Tricky Story 3 (game đố mẹo kết hợp tile match) đúng ngày: màn chơi đúng thiết kế, dung lượng gọn, và có cải tiến so với bản trước.','Hoàn thành phần việc của em trong Tricky Story 3 đúng ngày: các màn chơi chạy đúng thiết kế, mượt trên máy yếu, và game designer tự thêm/chỉnh màn được.','Hoàn thành phần việc của em trong Tricky Story 3 đúng ngày: các màn chơi chạy đúng thiết kế, dung lượng gọn, và có cải tiến so với bản trước.'], pDone:['Một hạng mục chỉ tính là XONG khi đạt đủ cả 5 điều kiện:\n1. Đúng chức năng: làm đủ 100% yêu cầu trong tài liệu thiết kế game\n2. Chơi được: chơi hết từ đầu đến cuối mọi màn (đố mẹo và tile match), 0 lỗi\n3. Tile match giải được: 100% màn có lời giải, không bị kẹt ô\n4. Qua tester: 0 lỗi nghiêm trọng, lỗi nhỏ còn lại ≤ 3 và đã có ngày sửa\n5. Không làm nặng game: dung lượng tăng ≤ 10%, thời gian tải màn không chậm hơn bản trước','Đúng tài liệu thiết kế game · màn đố mẹo và màn tile match chơi từ đầu đến cuối không lỗi · màn tile match luôn giải được, không bị kẹt ô · 0 lỗi nghiêm trọng khi tester kiểm tra · dung lượng game không tăng quá 10% so với lúc bắt đầu · có ít nhất 1 cải tiến đo được so với Tricky Story 2 (tải màn nhanh hơn, giảm dung lượng, hoặc làm màn mới nhanh hơn)','Đúng tài liệu thiết kế game · chơi từ đầu đến cuối mỗi màn không lỗi · 0 lỗi nghiêm trọng khi tester kiểm tra · ≥ 50 khung hình/giây trên máy yếu · game designer tự chỉnh màn bằng tool, không cần dev','Đúng tài liệu thiết kế game · chơi từ đầu đến cuối mỗi màn không lỗi · 0 lỗi nghiêm trọng khi tester kiểm tra · dung lượng game không tăng quá 10% so với lúc bắt đầu · có ít nhất 1 cải tiến đo được so với Tricky Story 2 (tải màn nhanh hơn, giảm dung lượng, hoặc làm màn mới nhanh hơn)']};
+['pGoal','pDone'].forEach(k => { if (P_OLD[k].includes(S[k])) S[k] = P_DEF[k]; });
+const save = () => { S._at = Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} if (typeof schedulePush === 'function') schedulePush(); };
+
+/* ================= NGÀY ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DAY = 864e5, DOW = ['CN','T2','T3','T4','T5','T6','T7'], DOWF = ['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+const pd = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const fmt = d => String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+const full = d => fmt(d)+'/'+d.getFullYear();
+const today = () => { const t = new Date(); return new Date(t.getFullYear(),t.getMonth(),t.getDate()); };
+const start = pd(START);
+const mon1 = new Date(start.getTime() + ((8 - start.getDay()) % 7 || 7)*DAY);
+const wStart = w => w===0 ? start : new Date(mon1.getTime() + (w-1)*7*DAY);
+const wEnd = w => w===0 ? new Date(mon1.getTime()-DAY) : new Date(wStart(w).getTime() + 4*DAY);
+const endDate = wEnd(8);
+const dd = (w,i) => { let d = new Date(wStart(w).getTime() + i*DAY); if (d.getMonth()===0 && d.getDate()===1) d = new Date(d.getTime()-DAY); return d; };
+const curWeek = () => { const t = today(); return t < mon1 ? 0 : Math.min(8, Math.floor((t-mon1)/(7*DAY))+1); };
+const checkins = () => [2,4,6,8].map(w => dd(w,4));
+const freshMs = () => MS_DEF.map(m => ({n:m[0], d:iso(dd(m[1],m[2])), done:false}));
+if (!S.ms) S.ms = freshMs();
+else S.ms = S.ms.map(m => { const i = MS_ALIAS[m.n]; return i!==undefined ? {...m, n:MS_DEF[i][0]} : m; });
+
+const LIST = (() => { const c = {}; return DAYS.map(d => { const w = d[0], i = c[w] = (c[w]===undefined?0:c[w]+1);
+  const date = new Date(wStart(w).getTime() + i*DAY);
+  return {w, key:`d${w}_${i}`, date, short: d[1] || (DOW[date.getDay()]+' '+fmt(date)), long: d[1] ? d[1] : (DOWF[date.getDay()]+', '+fmt(date)), doIt:d[2], learn:d[3], res:d[4], off:d[2].startsWith('Nghỉ')}; }); })();
+const workList = LIST.filter(d => !d.off && !d.short.startsWith('T7'));
+function todayIndex(){ const t = iso(today()); let i = LIST.findIndex(d => iso(d.date)===t && !d.short.startsWith('T7')); if (i>=0) return i; i = LIST.findIndex(d => d.date > today()); return i>=0 ? i : LIST.length-1; }
+let cur = todayIndex();
+
+/* ================= UI HELPERS ================= */
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2200); }
+function confetti(el){
+  const r = el.getBoundingClientRect(), cols = ['#4f46e5','#2563eb','#16a34a','#eda100','#e87ba4','#0ea5e9'];
+  for (let i=0;i<26;i++){ const s = document.createElement('i'); s.className = 'conf';
+    const a = Math.random()*Math.PI*2, d = 60 + Math.random()*110;
+    s.style.cssText = `left:${r.left+r.width/2}px;top:${r.top+r.height/2}px;background:${cols[i%cols.length]};--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d - 40}px;--r:${Math.random()*540}deg`;
+    document.body.appendChild(s); setTimeout(()=>s.remove(), 1100); }
+}
+const ICONS = {
+  home:'<path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/>',
+  map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
+  proj:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>',
+  goal:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  cup:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M17 5h3v2a3 3 0 01-3 3M7 5H4v2a3 3 0 003 3"/>'
+};
+const TABS = [['s-today','Hôm nay','home'],['s-plan','Lộ trình','map'],['s-proj','Dự án','proj'],['s-goal','Mục tiêu','goal'],['s-ev','Thành tích','cup']];
+$('#nav').insertAdjacentHTML('beforeend', TABS.map(t => `<button data-t="${t[0]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[t[2]]}</svg><span>${t[1]}</span></button>`).join(''));
+function moveInd(){ const b = $('#nav button.on'), ind = $('#ind'); if (!b) return; ind.style.left = b.offsetLeft+'px'; ind.style.width = b.offsetWidth+'px'; }
+function show(id){
+  document.querySelectorAll('section').forEach(s => s.classList.toggle('on', s.id===id));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t===id));
+  moveInd(); if (id==='s-ev') animateBars();
+  try{ localStorage.setItem(KEY+'_tab', id); }catch(e){}
+  if (innerWidth <= 820) window.scrollTo({top:0, behavior:'smooth'});
+}
+$('#nav').onclick = e => { const b = e.target.closest('button'); if (b) show(b.dataset.t); };
+addEventListener('resize', moveInd);
+
+/* ================= HERO ================= */
+function renderHero(){
+  const h = new Date().getHours();
+  $('#hello').textContent = (h<11?'Chào buổi sáng':h<14?'Chào buổi trưa':h<18?'Chào buổi chiều':'Chào buổi tối') + (S.gName?', '+S.gName:'') + ' 👋';
+  const t = today(), w = curWeek();
+  $('#hChip').textContent = t > endDate ? 'Đã hoàn thành 8 tuần' : `Tuần ${w} · ${WEEKS[w][0]}`;
+  $('#hDays').textContent = Math.max(0, Math.round((endDate - t)/DAY));
+  const n = workList.filter(d => S.days[d.key]).length;
+  $('#hDone').textContent = `${n}/${workList.length}`;
+  $('#hEv').textContent = S.ev.length;
+  const pct = n/workList.length;
+  $('#ringPct').textContent = Math.round(pct*100)+'%';
+  requestAnimationFrame(()=> $('#ringFg').style.strokeDashoffset = 326.7*(1-pct));
+}
+
+/* ================= HÔM NAY ================= */
+const stepsOf = k => S.steps[k] || (S.days[k] ? [true,true,true] : [false,false,false]);
+function setSteps(k, arr){ S.steps[k] = arr; S.days[k] = arr.every(Boolean); }
+function renderToday(dir){
+  const paint = () => {
+    const d = LIST[cur], ti = todayIndex(), isToday = cur===ti && iso(d.date)===iso(today());
+    $('#dEye').textContent = isToday ? 'Hôm nay' : (cur===ti ? 'Ngày làm việc tiếp theo' : (d.date < today() ? 'Ngày đã qua' : 'Xem trước'));
+    $('#dTitle').textContent = d.long;
+    $('#dWeek').textContent = WEEKS[d.w][0];
+    $('#dTag').textContent = 'Tuần ' + d.w;
+    $('#dDo').textContent = d.doIt; $('#dLearn').textContent = d.learn; $('#dRes').textContent = d.res;
+    const st = stepsOf(d.key), n = st.filter(Boolean).length, done = n===3;
+    document.querySelectorAll('#todayCard .step').forEach((el,i) => { el.classList.toggle('done', !!st[i]); el.setAttribute('aria-checked', !!st[i]); });
+    document.querySelectorAll('#prog i').forEach((el,i) => el.classList.toggle('on', i < n));
+    $('#doneBtn').className = 'btn grow ' + (done ? 'ok' : 'p');
+    $('#doneBtn').innerHTML = done ? '<svg class="chk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Xong cả ngày' : (n ? `Đã tích ${n}/3 · Tích hết` : 'Tích hết cả 3');
+    $('#doneBtn').disabled = d.off; if (d.off) $('#doneBtn').textContent = 'Ngày nghỉ';
+    $('#prev').disabled = cur===0; $('#next').disabled = cur===LIST.length-1;
+    $('#back').hidden = cur===ti;
+  };
+  const sw = $('#swap');
+  if (dir){ sw.classList.add(dir<0?'outR':'outL'); setTimeout(()=>{ paint(); sw.classList.remove('outR','outL'); }, 200); } else paint();
+}
+function go(dir){ const n = cur + dir; if (n<0 || n>=LIST.length) return; cur = n; renderToday(dir); }
+$('#prev').onclick = () => go(-1); $('#next').onclick = () => go(1);
+$('#back').onclick = () => { const ti = todayIndex(), dir = ti>cur?1:-1; cur = ti; renderToday(dir); };
+$('#doneBtn').onclick = e => { const d = LIST[cur]; if (d.off) return; const all = !S.days[d.key]; setSteps(d.key, [all,all,all]); save();
+  if (all){ confetti(e.currentTarget); toast('Tuyệt! Đã xong ' + d.short); }
+  renderToday(); renderHero(); renderWeeks(); };
+function tickStep(el){ const d = LIST[cur]; if (d.off) return; const i = +el.dataset.s, st = stepsOf(d.key).slice(); st[i] = !st[i]; setSteps(d.key, st); save();
+  renderToday(); renderHero(); renderWeeks();
+  if (st.every(Boolean)){ confetti($('#doneBtn')); toast('Xong cả 3 việc hôm nay! 🎉'); } }
+document.querySelectorAll('#todayCard .step').forEach(el => { el.addEventListener('click', () => tickStep(el));
+  el.addEventListener('keydown', e => { if (e.key===' '||e.key==='Enter'){ e.preventDefault(); tickStep(el); } }); });
+// vuốt trên điện thoại
+(() => { let x0 = null, y0 = null; const el = $('#todayCard');
+  el.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, {passive:true});
+  el.addEventListener('touchend', e => { if (x0===null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5) go(dx<0 ? 1 : -1); x0 = null; }, {passive:true}); })();
+
+function allDeadlines(){
+  const out = [];
+  S.ms.forEach(m => { if (!m.done && m.d) out.push({n:m.n, sub:'Dự án', d:pd(m.d)}); });
+  GOALS.forEach(g => { if (Array.isArray(g.dl)) g.dl.forEach(x => out.push({n:x[0], sub:g.name, d:dd(x[1],x[2])})); });
+  checkins().forEach((d,i) => out.push({n:'Check-in #'+(i+1)+' với sếp', sub:'Sếp', d}));
+  return out.sort((a,b) => a.d-b.d);
+}
+function renderUpcoming(){
+  const t = today(), list = allDeadlines().filter(x => x.d >= t).slice(0,4);
+  $('#upc').innerHTML = list.length ? list.map(x => { const n = Math.round((x.d-t)/DAY);
+    return `<div class="dli"><div class="d"><b>${x.d.getDate()}</b><span>Th.${x.d.getMonth()+1}</span></div><div class="t"><b>${esc(x.n)}</b><span>${esc(x.sub)}</span></div><span class="cd${n<=3?' hot':''}">${n===0?'Hôm nay':n===1?'Ngày mai':'Còn '+n+' ngày'}</span></div>`; }).join('')
+    : '<p class="muted">Không còn deadline nào 🎉</p>';
+}
+function renderHabits(){
+  const k = iso(today()), h = S.hab[k] || [];
+  $('#habits').innerHTML = HABITS.map((x,i) => `<div class="pill${h[i]?' on':''}" data-hab="${i}" role="checkbox" aria-checked="${!!h[i]}" tabindex="0"><span class="bx"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>${x}</div>`).join('');
+  $('#habCount').textContent = `${h.filter(Boolean).length}/${HABITS.length}`;
+}
+$('#evCrit').innerHTML = '<option value="">Tiêu chí…</option>' + CRIT.map(c => `<option value="${c[0]}">${c[1]}</option>`).join('');
+$('#evAdd').onclick = () => { const t = $('#evText').value.trim(); if (!t){ $('#evText').focus(); return; }
+  if (!$('#evCrit').value){ $('#evCrit').focus(); toast('Chọn tiêu chí cho thành tích'); return; }
+  S.ev.push({d:iso(today()), c:$('#evCrit').value, t}); save(); $('#evText').value = ''; $('#evCrit').value = '';
+  toast('Đã lưu thành tích #' + S.ev.length); renderEv(); renderHero(); };
+$('#evText').addEventListener('keydown', e => { if (e.key==='Enter') $('#evAdd').click(); });
+
+/* ================= LỘ TRÌNH ================= */
+const openW = new Set([curWeek()]);
+function renderStages(){
+  const w = curWeek();
+  $('#stages').innerHTML = STAGES.map(s => { const c = w>=s[3] && w<=s[4], p = w>s[4];
+    return `<div class="stg${c?' cur':''}${p?' past':''}">${c?'<i class="now"></i>':''}<div class="w">${s[0]} · ${fmt(wStart(s[3]))}–${fmt(wEnd(s[4]))}</div><b>${s[1]}</b><span>${s[2]}</span></div>`; }).join('');
+}
+function renderWeeks(){
+  const cw = curWeek(), ti = iso(today());
+  $('#weeks').innerHTML = WEEKS.map((w,i) => { const ds = LIST.filter(d => d.w===i && !d.off), n = ds.filter(d => S.days[d.key]).length;
+    return `<div class="wk${i===cw?' cur':''}${openW.has(i)?' open':''}${n===ds.length?' full':''}" data-w="${i}">
+      <button class="wkh" aria-expanded="${openW.has(i)}"><span class="wkn">${n===ds.length?'✓':i}</span><span class="wkt"><b>${w[0]}</b><span>${fmt(wStart(i))}–${fmt(wEnd(i))} · Học: ${w[1]}</span></span><span class="wkp">${n}/${ds.length}</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="wkb"><div><div class="days">
+        <div class="muted" style="font-size:13px;padding:0 0 6px"><b style="color:var(--ink2)">Kết quả tuần:</b> ${w[2]}</div>
+        ${LIST.filter(d => d.w===i).map(d => `<div class="dr${S.days[d.key]?' ok':''}${iso(d.date)===ti?' isT':''}">
+          ${d.off?'<span style="width:22px"></span>':`<input type="checkbox" class="cb" data-day="${d.key}" ${S.days[d.key]?'checked':''} aria-label="Xong ${d.short}">`}
+          <span class="dd">${d.short}${!S.days[d.key] && stepsOf(d.key).some(Boolean) ? `<br><span style="font-size:11.5px;color:var(--warn)">${stepsOf(d.key).filter(Boolean).length}/3</span>` : ''}</span><span class="tx"><b>${esc(d.doIt)}</b><span>Học: ${esc(d.learn)} · Đạt: ${esc(d.res)}</span></span></div>`).join('')}
+      </div></div></div></div>`; }).join('');
+}
+$('#weeks').addEventListener('click', e => { const h = e.target.closest('.wkh'); if (!h) return; const wk = h.parentElement, i = +wk.dataset.w;
+  wk.classList.toggle('open'); wk.classList.contains('open') ? openW.add(i) : openW.delete(i); h.setAttribute('aria-expanded', wk.classList.contains('open')); });
+
+/* ================= DỰ ÁN ================= */
+function renderProj(){
+  ['pName','pGoal','pDone'].forEach(k => { if (document.activeElement !== $('#'+k)) $('#'+k).value = S[k]||''; });
+  const t = today(); const next = S.ms.findIndex(m => !m.done);
+  $('#ms').innerHTML = S.ms.map((m,i) => `<div class="ms${m.done?' done':''}${i===next?' next':''}">
+      <input type="checkbox" class="cb" data-msd="${i}" ${m.done?'checked':''} aria-label="Đã xong mốc" style="position:absolute;opacity:0;width:24px;height:24px;left:0;top:14px;z-index:2;cursor:pointer">
+      <span class="dot"></span>
+      <span class="body"><span class="nm"><input data-msn="${i}" value="${esc(m.n)}" aria-label="Tên mốc"></span>
+      <input type="date" data-msdt="${i}" value="${m.d||''}" aria-label="Ngày"></span>
+      <button class="rm" data-msrm="${i}" aria-label="Xoá mốc">×</button></div>`).join('');
+  $('#todos').innerHTML = TODOS.map((x,i) => `<div class="todo${S.pj[i]?' ok':''}"><input type="checkbox" class="cb" data-pj="${i}" ${S.pj[i]?'checked':''} aria-label="${esc(x[0])}"><span class="tx"><b>${x[0]}</b></span><span class="when">${x[1]}</span></div>`).join('');
+  $('#pjCount').textContent = `${TODOS.filter((x,i)=>S.pj[i]).length}/${TODOS.length}`;
+}
+$('#msAdd').onclick = () => { S.ms.push({n:'Hoàn thành hạng mục mới', d:iso(today()), done:false}); save(); renderProj(); renderUpcoming(); renderGoal(); };
+
+/* ================= MỤC TIÊU ================= */
+const gv = (k, def) => S.gt[k]!=null ? S.gt[k] : def;
+const msStat = () => { const t = today(), withD = S.ms.filter(m => m.d), done = withD.filter(m => m.done).length, next = withD.filter(m => !m.done).sort((a,b)=>a.d.localeCompare(b.d))[0]; return {done, total:withD.length, next}; };
+const goalDl = g => g.dl==='ms' ? S.ms.filter(m=>m.d).map(m => [m.n, pd(m.d)]) : g.dl.map(x => [x[0], dd(x[1],x[2])]);
+function renderGoal(){
+  if (document.activeElement !== $('#gName')) $('#gName').value = S.gName||''; $('#gDate').value = S.gDate||'';
+  const t = today(), pn = S.pName ? esc(S.pName) : 'dự án em phụ trách';
+  $('#goal').innerHTML = `
+    <div class="ttl" style="align-items:flex-start"><div><h2 style="font-size:22px;font-weight:800">Mục tiêu 8 tuần${S.gName?' – '+esc(S.gName):''}</h2><div class="muted" style="font-size:14px">${full(start)} – ${full(endDate)}</div></div>
+    ${S.gDate?`<span class="badge ok">✓ Đã chốt ${fmt(pd(S.gDate))}</span>`:'<span class="badge no">Chưa chốt</span>'}</div>
+    <p style="margin:0"><span contenteditable="true" data-gt="intro">${esc(gv('intro',INTRO))}</span></p>
+    <div class="key3">
+      <div><b>≥ 90%</b><span>task đúng hạn, bug mở lại ≤ 10%</span></div>
+      <div><b>${msStat().done}/${msStat().total}</b><span>hạng mục ${pn} hoàn thành đúng ngày${msStat().next?` · tiếp theo: ${esc(msStat().next.n)} (${fmt(pd(msStat().next.d))})`:''}</span></div>
+      <div><b>≥ 20%</b><span>cải thiện hiệu năng · AI giảm ≥ 30% thời gian</span></div>
+    </div>
+    ${S.pName||S.pGoal||S.pDone?`<div class="gc" style="--cc:var(--pri)"><h4><i></i>Dự án: ${pn}</h4>${S.pGoal?`<div><span class="eyebrow">Mục tiêu dự án</span><div style="white-space:pre-line">${esc(S.pGoal)}</div></div>`:''}${S.pDone?`<div style="margin-top:8px"><span class="eyebrow">Thế nào là xong</span><div style="white-space:pre-line">${esc(S.pDone)}</div></div>`:''}</div>`:''}
+    ${GOALS.map(g => `<div class="gc" style="--cc:var(--${g.c})"><h4><i></i>${g.name}</h4>
+      <div class="gcols">
+        <div><div class="eyebrow">Con số phải đạt</div><div class="ml" contenteditable="true" data-gt="${g.c}_n">${esc(gv(g.c+'_n',g.num))}</div></div>
+        <div><div class="eyebrow">Việc cụ thể</div><div class="ml" contenteditable="true" data-gt="${g.c}_a">${esc(gv(g.c+'_a',g.act))}</div></div>
+        <div><div class="eyebrow">Deadline${g.dl==='ms'?' (hạng mục dự án)':''}</div><div class="dlist">${goalDl(g).map(x => `<div class="${x[1]<t?'past':''}"><span>${esc(x[0])}</span><b>${fmt(x[1])}</b></div>`).join('')}</div></div>
+      </div>
+      <div class="real noprint"><span>Thực tế</span><input class="in" data-real="${g.c}" value="${esc(S.real[g.c]||'')}" placeholder="Điền số thật mỗi lần check-in"></div></div>`).join('')}
+    <div class="gc" style="--cc:var(--ink2)"><h4><i></i>Lịch check-in với anh/chị</h4><div>${checkins().map((d,i) => `<b>#${i+1}</b> ${full(d)}`).join(' &nbsp;·&nbsp; ')}</div></div>`;
+}
+function goalText(){
+  const L = [], pn = S.pName || 'dự án em phụ trách';
+  L.push('MỤC TIÊU 8 TUẦN' + (S.gName?' – '+S.gName:'') + ` (${full(start)} – ${full(endDate)})`, '', gv('intro',INTRO), '');
+  L.push(`3 CON SỐ CHÍNH: ≥ 90% task đúng hạn · 100% hạng mục ${pn} xong đúng ngày đã chốt (${msStat().total} hạng mục, xem Deadline phần Chuyên môn) · 1 cải tiến ≥ 20% hiệu năng / AI giảm ≥ 30% thời gian`, '');
+  if (S.pName){ L.push('DỰ ÁN: ' + S.pName); if (S.pGoal) L.push('Mục tiêu dự án:', ...S.pGoal.split('\n').map(x => '  ' + x)); if (S.pDone) L.push('Thế nào là xong:', ...S.pDone.split('\n').map(x => '  ' + x)); L.push(''); }
+  GOALS.forEach((g,i) => {
+    L.push(`${i+1}) ${g.name.toUpperCase()}`, 'Con số:'); gv(g.c+'_n',g.num).split('\n').filter(x=>x.trim()).forEach(x => L.push('  ' + x.trim()));
+    L.push('Việc cụ thể:'); gv(g.c+'_a',g.act).split('\n').filter(x=>x.trim()).forEach(x => L.push('  ' + x.trim()));
+    L.push('Deadline:'); goalDl(g).forEach(x => L.push(`  – ${x[0]}: ${full(x[1])}`));
+    if (S.real[g.c]) L.push('Thực tế: ' + S.real[g.c]); L.push('');
+  });
+  L.push('LỊCH CHECK-IN: ' + checkins().map((d,i) => `#${i+1} ${full(d)}`).join(', '));
+  return L.join('\n');
+}
+$('#gCopy').onclick = () => { const t = goalText(), ok = () => toast('Đã sao chép — dán vào tin nhắn gửi sếp');
+  const fb = () => { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try{ document.execCommand('copy'); ok(); }catch(e){} a.remove(); };
+  try{ navigator.clipboard.writeText(t).then(ok, fb); }catch(e){ fb(); } };
+$('#gReset').onclick = e => { e.preventDefault(); S.gt = {}; save(); renderGoal(); toast('Đã về bản gốc'); };
+
+/* ================= THÀNH TÍCH ================= */
+function renderEv(){
+  const cnt = CRIT.map(c => S.ev.filter(e => e.c===c[0]).length), max = Math.max(5, ...cnt);
+  $('#bars').innerHTML = CRIT.map((c,i) => `<div class="br" style="--cc:var(--${c[0]})"><div class="l">${c[1]}<span>${cnt[i]}${cnt[i]>=3?' ✓':' / 3'}</span></div>
+    <div class="t" title="${c[1]}: ${cnt[i]} thành tích"><div data-w="${cnt[i]/max*100}"></div><span class="tg" style="left:${3/max*100}%"></span></div></div>`).join('');
+  $('#evCount').textContent = S.ev.length ? S.ev.length + ' mục' : '';
+  $('#evList').innerHTML = S.ev.length ? S.ev.map((e,i)=>({...e,i})).reverse().map((e,k) => { const c = CRIT.find(x=>x[0]===e.c);
+    return `<div class="evi" style="--cc:var(--${e.c});animation-delay:${k*40}ms"><span class="c">${c?c[1]:''}</span><span class="tx">${esc(e.t)}</span><span class="dt">${fmt(pd(e.d))}</span><button data-del="${e.i}" aria-label="Xoá">×</button></div>`; }).join('')
+    : '<p class="muted" style="margin:0">Chưa có thành tích nào. Ghi ở tab Hôm nay nhé.</p>';
+  if ($('#s-ev').classList.contains('on')) animateBars();
+}
+function animateBars(){ document.querySelectorAll('#bars .t>div').forEach(b => { b.style.width = '0'; requestAnimationFrame(()=>requestAnimationFrame(()=> b.style.width = b.dataset.w+'%')); }); }
+
+/* ================= SỰ KIỆN ================= */
+document.addEventListener('change', e => { const t = e.target;
+  if (t.dataset.day){ setSteps(t.dataset.day, [t.checked,t.checked,t.checked]); save(); t.closest('.dr').classList.toggle('ok', t.checked); renderHero(); renderToday(); setTimeout(renderWeeks, 250); }
+  if (t.dataset.pj){ S.pj[t.dataset.pj] = t.checked; save(); renderProj(); if (t.checked) toast('Xong 1 việc dự án 👍'); }
+  if (t.dataset.msd){ S.ms[+t.dataset.msd].done = t.checked; save(); renderProj(); renderUpcoming(); if (t.checked) confetti(t); }
+  if (t.dataset.msdt){ S.ms[+t.dataset.msdt].d = t.value; save(); renderUpcoming(); renderGoal(); }
+  if (t.id==='gDate'){ S.gDate = t.value; save(); renderGoal(); if (t.value) toast('Đã ghi ngày chốt với sếp'); }
+  if (t.dataset.real){ S.real[t.dataset.real] = t.value; save(); }
+});
+document.addEventListener('input', e => { const t = e.target;
+  if (['pName','pGoal','pDone'].includes(t.id)){ S[t.id] = t.value; save(); renderGoal(); }
+  if (t.id==='gName'){ S.gName = t.value; save(); renderHero(); renderGoal(); }
+  if (t.dataset.msn){ S.ms[+t.dataset.msn].n = t.value; save(); renderUpcoming(); }
+  const g = t.closest && t.closest('[data-gt]'); if (g){ S.gt[g.dataset.gt] = g.innerText.trim(); save(); }
+});
+document.addEventListener('focusout', e => { if (e.target.dataset && e.target.dataset.msn) renderGoal(); });
+document.addEventListener('click', e => {
+  const p = e.target.closest('.pill[data-hab]');
+  if (p){ const k = iso(today()), i = +p.dataset.hab; S.hab[k] = S.hab[k] || []; S.hab[k][i] = !S.hab[k][i]; save(); renderHabits();
+    if ((S.hab[k]||[]).filter(Boolean).length === HABITS.length){ confetti(p); toast('Đủ 3/3 hôm nay!'); } }
+  const d = e.target.closest('[data-del]'); if (d){ S.ev.splice(+d.dataset.del,1); save(); renderEv(); renderHero(); }
+  const r = e.target.closest('[data-msrm]'); if (r){ S.ms.splice(+r.dataset.msrm,1); save(); renderProj(); renderUpcoming(); renderGoal(); }
+});
+document.addEventListener('keydown', e => { const p = e.target.closest && e.target.closest('.pill[data-hab]'); if (p && (e.key===' '||e.key==='Enter')){ e.preventDefault(); p.click(); } });
+
+
+/* ================= ĐỒNG BỘ ================= */
+const DEV = Math.random().toString(36).slice(2);
+const SYNC_TXT = {ok:'☁ Đã đồng bộ', saving:'☁ Đang lưu…', local:'💾 Chỉ lưu trên máy này · bấm để đồng bộ', slow:'☁ Đang kết nối…', err:'⚠ Chưa đồng bộ được · bấm để xem', auth:'⚠ Token GitHub hết hạn · bấm để kết nối lại'};
+let syncMode = 'local';
+function setSync(k){ const el = $('#sync'); if (el) el.textContent = SYNC_TXT[k] + (k==='ok' && syncMode==='gh' ? ' (GitHub)' : '');
+  const n = $('#syncNote'); if (n) n.textContent = syncMode==='local' ? 'Tiến độ đang lưu trong trình duyệt của máy này. Bấm nhãn ở đầu trang để bật đồng bộ qua GitHub.' : 'Tiến độ được đồng bộ — mở trang ở máy nào cũng thấy như nhau.'; }
+function applyState(o){
+  if (!o || typeof o !== 'object') return;
+  S = Object.assign(S, o); if (!Array.isArray(S.ms)) S.ms = freshMs();
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+  cur = todayIndex(); renderAll();
+}
+let pushTimer = null;
+function schedulePush(){
+  if (syncMode === 'local') return;
+  setSync('saving'); clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => syncMode==='gh' ? ghPush() : cPush(), 1500);
+}
+
+/* ---- GitHub Gist ---- */
+const GH = {tk:'plan8w_gh_token', gid:'plan8w_gh_gist', file:'tien-do-ke-hoach-8-tuan.json', desc:'Tiến độ – Kế hoạch 8 tuần (tự động, đừng xoá)'};
+const lget = k => { try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } };
+const lset = (k,v) => { try{ v ? localStorage.setItem(k,v) : localStorage.removeItem(k); }catch(e){} };
+async function gh(path, opt){
+  opt = opt || {};
+  const r = await fetch('https://api.github.com' + path, {method: opt.method || 'GET', body: opt.body,
+    headers: Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer ' + lget(GH.tk)}, opt.body ? {'Content-Type':'application/json'} : {})});
+  if (!r.ok){ const e = new Error('GitHub ' + r.status); e.status = r.status; throw e; }
+  return r.status === 204 ? null : r.json();
+}
+const payload = () => JSON.stringify({at: S._at || Date.now(), dev: DEV, s: S});
+let ghBusy = false, ghAgain = false;
+async function ghPush(){
+  if (ghBusy){ ghAgain = true; return; }
+  ghBusy = true; setSync('saving');
+  try{ await gh('/gists/' + lget(GH.gid), {method:'PATCH', body: JSON.stringify({files:{[GH.file]:{content: payload()}}})}); setSync('ok'); }
+  catch(e){ setSync(e.status===401 ? 'auth' : 'err'); }
+  ghBusy = false; if (ghAgain){ ghAgain = false; ghPush(); }
+}
+async function ghPull(quiet){
+  const g = await gh('/gists/' + lget(GH.gid));
+  const f = g.files && g.files[GH.file];
+  if (!f){ await ghPush(); return; }
+  let txt = f.content;
+  if (f.truncated && f.raw_url) txt = await (await fetch(f.raw_url)).text();
+  const d = JSON.parse(txt || '{}');
+  if ((d.at||0) > (S._at||0)){ applyState(d.s); if (!quiet) toast('Đã cập nhật từ thiết bị khác'); }
+  else if ((S._at||0) > (d.at||0)) await ghPush();
+  setSync('ok');
+}
+async function ghConnect(token){
+  lset(GH.tk, token);
+  let id = lget(GH.gid);
+  if (id){ try{ await gh('/gists/' + id); }catch(e){ if (e.status===404) id = ''; else throw e; } }
+  if (!id){ const list = await gh('/gists?per_page=100'); const hit = list.find(x => x.files && x.files[GH.file]); id = hit ? hit.id : ''; }
+  if (!id){ const g = await gh('/gists', {method:'POST', body: JSON.stringify({description: GH.desc, public: false, files: {[GH.file]: {content: payload()}}})}); id = g.id; }
+  lset(GH.gid, id); syncMode = 'gh';
+  await ghPull(true);
+}
+function ghStart(){
+  syncMode = 'gh'; setSync('slow');
+  ghPull(true).catch(e => setSync(e.status===401 ? 'auth' : 'err'));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible' && syncMode==='gh') ghPull(false).catch(()=>{}); });
+  setInterval(() => { if (document.visibilityState==='visible' && syncMode==='gh' && !ghBusy) ghPull(false).catch(()=>{}); }, 90000);
+}
+
+/* ---- Claude (khi mở bằng link Claude) ---- */
+let docRef = null, cBusy = false, cAgain = false;
+async function cPush(){
+  if (!docRef) return;
+  if (cBusy){ cAgain = true; return; }
+  cBusy = true;
+  try{ await docRef.set({s: JSON.stringify(S), at: S._at || Date.now(), dev: DEV}); setSync('ok'); }
+  catch(e){ if (e && e.code === 'unavailable') setTimeout(cPush, 1500 + Math.random()*1500); else setSync('err'); }
+  cBusy = false; if (cAgain){ cAgain = false; cPush(); }
+}
+async function claudeStart(){
+  setSync('slow');
+  let db = null; try{ db = await window.claude.use('db'); }catch(e){}
+  if (!db){ syncMode = 'local'; setSync('local'); return; }
+  docRef = db.doc('plan/state'); syncMode = 'claude';
+  try{
+    const snap = await docRef.get(); const d = snap.exists ? snap.data() : null;
+    if (d && (d.at||0) > (S._at||0)) applyState(JSON.parse(d.s));
+    else if (S._at && (!d || S._at > (d.at||0))) cPush();
+    setSync('ok');
+  }catch(e){ setSync('err'); return; }
+  docRef.onSnapshot(snap => { if (!snap.exists || snap.metadata.hasPendingWrites) return; const d = snap.data();
+    if (d.dev !== DEV && (d.at||0) > (S._at||0)){ applyState(JSON.parse(d.s)); setSync('ok'); toast('Đã cập nhật từ thiết bị khác'); } }, () => {});
+}
+
+/* ---- khởi động ---- */
+if (lget(GH.tk) && lget(GH.gid)) ghStart();
+else if (window.claude && typeof window.claude.use === 'function') claudeStart();
+else setSync('local');
+
+/* ---- hộp thoại GitHub ---- */
+const openGh = () => { $('#ghModal').classList.add('show'); $('#ghToken').value = ''; $('#ghSt').textContent = syncMode==='gh' ? '✓ Máy này đang đồng bộ qua GitHub.' : ''; setTimeout(()=>$('#ghToken').focus(), 50); };
+const closeGh = () => $('#ghModal').classList.remove('show');
+$('#sync').addEventListener('click', openGh);
+$('#ghClose').onclick = closeGh;
+$('#ghModal').addEventListener('click', e => { if (e.target.id === 'ghModal') closeGh(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGh(); });
+$('#ghGo').onclick = async () => {
+  const t = $('#ghToken').value.trim();
+  if (!t){ $('#ghSt').textContent = 'Dán token vào ô trên trước nhé.'; return; }
+  $('#ghSt').textContent = 'Đang kết nối…';
+  try{ await ghConnect(t); $('#ghSt').textContent = '✓ Đã kết nối. Tiến độ sẽ tự lưu lên GitHub.'; toast('Đã bật đồng bộ GitHub'); setTimeout(closeGh, 900);
+    if (!window.__ghLoops){ window.__ghLoops = true; document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible' && syncMode==='gh') ghPull(false).catch(()=>{}); }); } }
+  catch(e){ lset(GH.tk, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local');
+    $('#ghSt').textContent = e.status===401 ? 'Token không đúng hoặc đã hết hạn.' : e.status===403 ? 'Token chưa có quyền gist. Tạo lại token và tích ô gist.' : 'Không kết nối được GitHub. Kiểm tra mạng rồi thử lại.'; }
+};
+$('#ghOff').onclick = () => { lset(GH.tk, ''); lset(GH.gid, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local'); $('#ghSt').textContent = 'Đã ngắt trên máy này. Dữ liệu trên GitHub vẫn còn.'; };
+
+function renderAll(){ renderHero(); renderToday(); renderUpcoming(); renderHabits(); renderStages(); renderWeeks(); renderProj(); renderGoal(); renderEv(); }
+renderAll();
+let first = 's-today'; try{ first = localStorage.getItem(KEY+'_tab') || first; }catch(e){}
+show(TABS.some(t=>t[0]===first) ? first : 's-today');
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
+</script>
+</body>
+</html>
