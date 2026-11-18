@@ -490,21 +490,20 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
 <div class="modal" id="ghModal" role="dialog" aria-modal="true" aria-labelledby="ghTitle">
   <div class="box">
     <button class="x" id="ghClose" aria-label="Đóng">×</button>
-    <h3 id="ghTitle">Đồng bộ tiến độ qua GitHub</h3>
-    <p class="muted" style="margin:0;font-size:14px">Lưu tiến độ vào một ghi chú bí mật (Gist) trên GitHub của bạn. Mở trang ở máy nào cũng thấy cùng tiến độ.</p>
+    <h3 id="ghTitle">Đồng bộ tiến độ giữa các máy</h3>
+    <p class="muted" style="margin:0;font-size:14px">Nhập mã PIN để lưu tiến độ lên mạng. Mở trang ở máy nào, nhập cùng PIN, sẽ thấy cùng tiến độ.</p>
     <ol>
-      <li>Bấm <a href="https://github.com/settings/tokens/new?scopes=gist&description=Ke%20hoach%208%20tuan" target="_blank" rel="noopener">tạo token GitHub</a> (đăng nhập GitHub nếu được hỏi). Ô <b>gist</b> đã được tích sẵn.</li>
-      <li>Ở mục <b>Expiration</b> chọn <b>90 days</b> hoặc <b>No expiration</b>, kéo xuống cuối bấm <b>Generate token</b>.</li>
-      <li>Sao chép mã bắt đầu bằng <b>ghp_</b>, dán vào ô dưới rồi bấm <b>Kết nối</b>.</li>
-      <li>Làm lại bước 3 trên mỗi máy (điện thoại, máy tính) với <b>cùng một token</b>.</li>
+      <li><b>Lần đầu tiên:</b> tự đặt một mã PIN (ít nhất 4 ký tự, ví dụ 6 số) rồi bấm <b>Kết nối</b>.</li>
+      <li><b>Máy khác:</b> mở trang, bấm nhãn ở đầu trang, nhập <b>đúng PIN đó</b>.</li>
+      <li>Mỗi máy chỉ nhập 1 lần, sau đó trang tự lưu.</li>
     </ol>
-    <input class="in" id="ghToken" type="password" placeholder="Dán token ghp_… vào đây" autocomplete="off">
+    <input class="in" id="ghToken" type="password" inputmode="numeric" placeholder="Mã PIN" autocomplete="off">
     <div class="row2">
       <button class="btn p" id="ghGo">Kết nối</button>
       <button class="btn gh" id="ghOff">Ngắt trên máy này</button>
     </div>
     <div class="st" id="ghSt"></div>
-    <p class="muted" style="font-size:12.5px;margin:8px 0 0">Token chỉ có quyền đọc/ghi Gist, không đụng được vào code hay repo. Token lưu trong trình duyệt của máy này, không gửi đi đâu ngoài GitHub.</p>
+    <p class="muted" style="font-size:12.5px;margin:8px 0 0">Nhớ kỹ PIN. Không có PIN thì không ai xem hay sửa được tiến độ của bạn — kể cả bạn.</p>
   </div>
 </div>
 
@@ -875,10 +874,10 @@ document.addEventListener('keydown', e => { const p = e.target.closest && e.targ
 
 /* ================= ĐỒNG BỘ ================= */
 const DEV = Math.random().toString(36).slice(2);
-const SYNC_TXT = {ok:'☁ Đã đồng bộ', saving:'☁ Đang lưu…', local:'💾 Chỉ lưu trên máy này · bấm để đồng bộ', slow:'☁ Đang kết nối…', err:'⚠ Chưa đồng bộ được · bấm để xem', auth:'⚠ Token GitHub hết hạn · bấm để kết nối lại'};
+const SYNC_TXT = {ok:'☁ Đã đồng bộ', saving:'☁ Đang lưu…', local:'💾 Chỉ lưu trên máy này · bấm để đồng bộ', slow:'☁ Đang kết nối…', err:'⚠ Chưa đồng bộ được · bấm để xem', auth:'⚠ Sai PIN · bấm để nhập lại'};
 let syncMode = 'local';
-function setSync(k){ const el = $('#sync'); if (el) el.textContent = SYNC_TXT[k] + (k==='ok' && syncMode==='gh' ? ' (GitHub)' : '');
-  const n = $('#syncNote'); if (n) n.textContent = syncMode==='local' ? 'Tiến độ đang lưu trong trình duyệt của máy này. Bấm nhãn ở đầu trang để bật đồng bộ qua GitHub.' : 'Tiến độ được đồng bộ — mở trang ở máy nào cũng thấy như nhau.'; }
+function setSync(k){ const el = $('#sync'); if (el) el.textContent = SYNC_TXT[k] + '';
+  const n = $('#syncNote'); if (n) n.textContent = syncMode==='local' ? 'Tiến độ đang lưu trong trình duyệt của máy này. Bấm nhãn ở đầu trang và nhập mã PIN để đồng bộ giữa các máy.' : 'Tiến độ được đồng bộ — mở trang ở máy nào cũng thấy như nhau.'; }
 function applyState(o){
   if (!o || typeof o !== 'object') return;
   S = Object.assign(S, o); if (!Array.isArray(S.ms)) S.ms = freshMs();
@@ -892,17 +891,6 @@ function schedulePush(){
   pushTimer = setTimeout(() => syncMode==='gh' ? ghPush() : cPush(), 1500);
 }
 
-/* ---- GitHub Gist ---- */
-const GH = {tk:'plan8w_gh_token', gid:'plan8w_gh_gist', file:'tien-do-ke-hoach-8-tuan.json', desc:'Tiến độ – Kế hoạch 8 tuần (tự động, đừng xoá)'};
-const lget = k => { try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } };
-const lset = (k,v) => { try{ v ? localStorage.setItem(k,v) : localStorage.removeItem(k); }catch(e){} };
-async function gh(path, opt){
-  opt = opt || {};
-  const r = await fetch('https://api.github.com' + path, {method: opt.method || 'GET', body: opt.body,
-    headers: Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer ' + lget(GH.tk)}, opt.body ? {'Content-Type':'application/json'} : {})});
-  if (!r.ok){ const e = new Error('GitHub ' + r.status); e.status = r.status; throw e; }
-  return r.status === 204 ? null : r.json();
-}
 /* gộp tiến độ hai máy (chỉ dùng lần kết nối đầu): ô đã tích ở máy nào cũng giữ */
 function mergeStates(a, b){
   const o = Object.assign({}, a, b);
@@ -916,45 +904,50 @@ function mergeStates(a, b){
   o._at = Date.now();
   return o;
 }
-const payload = () => JSON.stringify({at: S._at || Date.now(), dev: DEV, s: S});
-let ghBusy = false, ghAgain = false;
+/* ---- Supabase ---- */
+const SB = {url:'https://djqhdhlzlqhctdmqdrbm.supabase.co', key:'sb_publishable_KiOAOM7KJB4D4GEQFwwCIg_rNUZBG1W', id:'main', pinKey:'plan8w_sb_pin'};
+const lget = k => { try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } };
+const lset = (k,v) => { try{ v ? localStorage.setItem(k,v) : localStorage.removeItem(k); }catch(e){} };
+async function sb(fn, body){
+  const r = await fetch(SB.url + '/rest/v1/rpc/' + fn, {method:'POST', headers:{'apikey': SB.key, 'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  const txt = await r.text(); let j = null; try{ j = txt ? JSON.parse(txt) : null; }catch(e){}
+  if (!r.ok){ const e = new Error((j && j.message) || ('HTTP ' + r.status)); e.status = r.status; e.msg = j && j.message; throw e; }
+  return j;
+}
+const sbLoad = pin => sb('load_plan', {p_id: SB.id, p_pin: pin});
+const sbSave = (pin, data, at) => sb('save_plan', {p_id: SB.id, p_pin: pin, p_data: data, p_at: at});
+let ghBusy = false, ghAgain = false;   // (tên cũ giữ lại cho gọn)
 async function ghPush(){
   if (ghBusy){ ghAgain = true; return; }
   ghBusy = true; setSync('saving');
-  try{ await gh('/gists/' + lget(GH.gid), {method:'PATCH', body: JSON.stringify({files:{[GH.file]:{content: payload()}}})}); setSync('ok'); }
-  catch(e){ setSync(e.status===401 ? 'auth' : 'err'); }
+  try{ await sbSave(lget(SB.pinKey), S, S._at || Date.now()); setSync('ok'); }
+  catch(e){ setSync(e.msg === 'sai_pin' ? 'auth' : 'err'); }
   ghBusy = false; if (ghAgain){ ghAgain = false; ghPush(); }
 }
 async function ghPull(quiet){
-  const g = await gh('/gists/' + lget(GH.gid));
-  const f = g.files && g.files[GH.file];
-  if (!f){ await ghPush(); return; }
-  let txt = f.content;
-  if (f.truncated && f.raw_url) txt = await (await fetch(f.raw_url)).text();
-  const d = JSON.parse(txt || '{}');
-  if ((d.at||0) > (S._at||0)){ applyState(d.s); if (!quiet) toast('Đã cập nhật từ thiết bị khác'); }
-  else if ((S._at||0) > (d.at||0)) await ghPush();
+  const r = await sbLoad(lget(SB.pinKey));
+  if (!r || !r.exists){ await ghPush(); return; }
+  if ((r.at||0) > (S._at||0)){ applyState(r.data); if (!quiet) toast('Đã cập nhật từ thiết bị khác'); }
+  else if ((S._at||0) > (r.at||0)) await ghPush();
   setSync('ok');
 }
-async function ghConnect(token){
-  lset(GH.tk, token);
-  let id = lget(GH.gid);
-  if (id){ try{ await gh('/gists/' + id); }catch(e){ if (e.status===404) id = ''; else throw e; } }
-  if (!id){ const list = await gh('/gists?per_page=100'); const hit = list.find(x => x.files && x.files[GH.file]); id = hit ? hit.id : ''; }
-  if (!id){ const g = await gh('/gists', {method:'POST', body: JSON.stringify({description: GH.desc, public: false, files: {[GH.file]: {content: payload()}}})}); id = g.id; }
-  lset(GH.gid, id); syncMode = 'gh';
-  try{
-    const g = await gh('/gists/' + id), f = g.files && g.files[GH.file];
-    const d = f ? JSON.parse(f.content || '{}') : null;
-    if (d && d.s && d.dev !== DEV){ applyState(mergeStates(d.s, S)); await ghPush(); setSync('ok'); return; }
-  }catch(e){}
-  await ghPull(true);
+async function ghConnect(pin){
+  const r = await sbLoad(pin);            // sai PIN sẽ ném lỗi ở đây
+  lset(SB.pinKey, pin); syncMode = 'gh';
+  if (r && r.exists && r.data){ applyState(mergeStates(r.data, S)); }
+  else { S._at = Date.now(); }
+  await sbSave(pin, S, S._at || Date.now()); setSync('ok');
+  return !(r && r.exists);
+}
+let loopsOn = false;
+function ghLoops(){
+  if (loopsOn) return; loopsOn = true;
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible' && syncMode==='gh') ghPull(false).catch(()=>{}); });
+  setInterval(() => { if (document.visibilityState==='visible' && syncMode==='gh' && !ghBusy) ghPull(false).catch(()=>{}); }, 60000);
 }
 function ghStart(){
-  syncMode = 'gh'; setSync('slow');
-  ghPull(true).catch(e => setSync(e.status===401 ? 'auth' : 'err'));
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible' && syncMode==='gh') ghPull(false).catch(()=>{}); });
-  setInterval(() => { if (document.visibilityState==='visible' && syncMode==='gh' && !ghBusy) ghPull(false).catch(()=>{}); }, 90000);
+  syncMode = 'gh'; setSync('slow'); ghLoops();
+  ghPull(true).catch(e => setSync(e.msg==='sai_pin' ? 'auth' : 'err'));
 }
 
 /* ---- Claude (khi mở bằng link Claude) ---- */
@@ -983,12 +976,12 @@ async function claudeStart(){
 }
 
 /* ---- khởi động ---- */
-if (lget(GH.tk) && lget(GH.gid)) ghStart();
+if (lget(SB.pinKey)) ghStart();
 else if (window.claude && typeof window.claude.use === 'function') claudeStart();
 else setSync('local');
 
 /* ---- hộp thoại GitHub ---- */
-const openGh = () => { $('#ghModal').classList.add('show'); $('#ghToken').value = ''; $('#ghSt').textContent = syncMode==='gh' ? '✓ Máy này đang đồng bộ qua GitHub.' : ''; setTimeout(()=>$('#ghToken').focus(), 50); };
+const openGh = () => { $('#ghModal').classList.add('show'); $('#ghToken').value = ''; $('#ghSt').textContent = syncMode==='gh' ? '✓ Máy này đang đồng bộ.' : ''; setTimeout(()=>$('#ghToken').focus(), 50); };
 const closeGh = () => $('#ghModal').classList.remove('show');
 $('#sync').addEventListener('click', openGh);
 $('#ghClose').onclick = closeGh;
@@ -996,14 +989,15 @@ $('#ghModal').addEventListener('click', e => { if (e.target.id === 'ghModal') cl
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGh(); });
 $('#ghGo').onclick = async () => {
   const t = $('#ghToken').value.trim();
-  if (!t){ $('#ghSt').textContent = 'Dán token vào ô trên trước nhé.'; return; }
+  if (t.length < 4){ $('#ghSt').textContent = 'PIN cần ít nhất 4 ký tự.'; return; }
   $('#ghSt').textContent = 'Đang kết nối…';
-  try{ await ghConnect(t); $('#ghSt').textContent = '✓ Đã kết nối. Tiến độ sẽ tự lưu lên GitHub.'; toast('Đã bật đồng bộ GitHub'); setTimeout(closeGh, 900);
-    if (!window.__ghLoops){ window.__ghLoops = true; document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible' && syncMode==='gh') ghPull(false).catch(()=>{}); }); } }
-  catch(e){ lset(GH.tk, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local');
-    $('#ghSt').textContent = e.status===401 ? 'Token không đúng hoặc đã hết hạn.' : e.status===403 ? 'Token chưa có quyền gist. Tạo lại token và tích ô gist.' : 'Không kết nối được GitHub. Kiểm tra mạng rồi thử lại.'; }
+  try{ const created = await ghConnect(t); ghLoops();
+    $('#ghSt').textContent = created ? '✓ Đã tạo PIN và lưu tiến độ. Nhớ PIN này để nhập trên máy khác.' : '✓ Đã kết nối. Tiến độ của các máy đã được gộp lại.';
+    toast('Đã bật đồng bộ'); setTimeout(closeGh, created ? 2500 : 1000); }
+  catch(e){ lset(SB.pinKey, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local');
+    $('#ghSt').textContent = e.msg==='sai_pin' ? 'Sai PIN. Nhập đúng PIN đã đặt ở máy đầu tiên.' : 'Không kết nối được. Kiểm tra mạng rồi thử lại.'; }
 };
-$('#ghOff').onclick = () => { lset(GH.tk, ''); lset(GH.gid, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local'); $('#ghSt').textContent = 'Đã ngắt trên máy này. Dữ liệu trên GitHub vẫn còn.'; };
+$('#ghOff').onclick = () => { lset(SB.pinKey, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local'); $('#ghSt').textContent = 'Đã ngắt trên máy này. Tiến độ trên mạng vẫn còn.'; };
 
 function renderAll(){ renderHero(); renderToday(); renderUpcoming(); renderHabits(); renderStages(); renderWeeks(); renderProj(); renderGoal(); renderEv(); }
 renderAll();
