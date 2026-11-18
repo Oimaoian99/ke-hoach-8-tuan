@@ -487,25 +487,7 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
 
 </main>
 <div class="toast" id="toast"></div>
-<div class="modal" id="ghModal" role="dialog" aria-modal="true" aria-labelledby="ghTitle">
-  <div class="box">
-    <button class="x" id="ghClose" aria-label="Đóng">×</button>
-    <h3 id="ghTitle">Đồng bộ tiến độ giữa các máy</h3>
-    <p class="muted" style="margin:0;font-size:14px">Nhập mã PIN để lưu tiến độ lên mạng. Mở trang ở máy nào, nhập cùng PIN, sẽ thấy cùng tiến độ.</p>
-    <ol>
-      <li><b>Lần đầu tiên:</b> tự đặt một mã PIN (ít nhất 4 ký tự, ví dụ 6 số) rồi bấm <b>Kết nối</b>.</li>
-      <li><b>Máy khác:</b> mở trang, bấm nhãn ở đầu trang, nhập <b>đúng PIN đó</b>.</li>
-      <li>Mỗi máy chỉ nhập 1 lần, sau đó trang tự lưu.</li>
-    </ol>
-    <input class="in" id="ghToken" type="password" inputmode="numeric" placeholder="Mã PIN" autocomplete="off">
-    <div class="row2">
-      <button class="btn p" id="ghGo">Kết nối</button>
-      <button class="btn gh" id="ghOff">Ngắt trên máy này</button>
-    </div>
-    <div class="st" id="ghSt"></div>
-    <p class="muted" style="font-size:12.5px;margin:8px 0 0">Nhớ kỹ PIN. Không có PIN thì không ai xem hay sửa được tiến độ của bạn — kể cả bạn.</p>
-  </div>
-</div>
+
 
 <script>
 /* ================= DỮ LIỆU ================= */
@@ -874,10 +856,10 @@ document.addEventListener('keydown', e => { const p = e.target.closest && e.targ
 
 /* ================= ĐỒNG BỘ ================= */
 const DEV = Math.random().toString(36).slice(2);
-const SYNC_TXT = {ok:'☁ Đã đồng bộ', saving:'☁ Đang lưu…', local:'💾 Chỉ lưu trên máy này · bấm để đồng bộ', slow:'☁ Đang kết nối…', err:'⚠ Chưa đồng bộ được · bấm để xem', auth:'⚠ Sai PIN · bấm để nhập lại'};
+const SYNC_TXT = {ok:'☁ Đã đồng bộ', saving:'☁ Đang lưu…', local:'💾 Chỉ lưu trên máy này', slow:'☁ Đang kết nối…', err:'⚠ Chưa đồng bộ được · bấm để thử lại', auth:'⚠ Sai PIN · bấm để nhập lại'};
 let syncMode = 'local';
 function setSync(k){ const el = $('#sync'); if (el) el.textContent = SYNC_TXT[k] + '';
-  const n = $('#syncNote'); if (n) n.textContent = syncMode==='local' ? 'Tiến độ đang lưu trong trình duyệt của máy này. Bấm nhãn ở đầu trang và nhập mã PIN để đồng bộ giữa các máy.' : 'Tiến độ được đồng bộ — mở trang ở máy nào cũng thấy như nhau.'; }
+  const n = $('#syncNote'); if (n) n.textContent = syncMode==='local' ? 'Tiến độ đang lưu trong trình duyệt của máy này. Kiểm tra mạng rồi bấm nhãn ở đầu trang để thử đồng bộ lại.' : 'Tiến độ tự đồng bộ — mở trang ở máy nào cũng thấy như nhau.'; }
 function applyState(o){
   if (!o || typeof o !== 'object') return;
   S = Object.assign(S, o); if (!Array.isArray(S.ms)) S.ms = freshMs();
@@ -905,7 +887,7 @@ function mergeStates(a, b){
   return o;
 }
 /* ---- Supabase ---- */
-const SB = {url:'https://djqhdhlzlqhctdmqdrbm.supabase.co', key:'sb_publishable_KiOAOM7KJB4D4GEQFwwCIg_rNUZBG1W', id:'main', pinKey:'plan8w_sb_pin'};
+const SB = {url:'https://djqhdhlzlqhctdmqdrbm.supabase.co', key:'sb_publishable_KiOAOM7KJB4D4GEQFwwCIg_rNUZBG1W', id:'auto', pin:'ts3-auto-7f3k9q2m', merged:'plan8w_sb_merged'};
 const lget = k => { try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } };
 const lset = (k,v) => { try{ v ? localStorage.setItem(k,v) : localStorage.removeItem(k); }catch(e){} };
 async function sb(fn, body){
@@ -920,12 +902,12 @@ let ghBusy = false, ghAgain = false;   // (tên cũ giữ lại cho gọn)
 async function ghPush(){
   if (ghBusy){ ghAgain = true; return; }
   ghBusy = true; setSync('saving');
-  try{ await sbSave(lget(SB.pinKey), S, S._at || Date.now()); setSync('ok'); }
+  try{ await sbSave(SB.pin, S, S._at || Date.now()); setSync('ok'); }
   catch(e){ setSync(e.msg === 'sai_pin' ? 'auth' : 'err'); }
   ghBusy = false; if (ghAgain){ ghAgain = false; ghPush(); }
 }
 async function ghPull(quiet){
-  const r = await sbLoad(lget(SB.pinKey));
+  const r = await sbLoad(SB.pin);
   if (!r || !r.exists){ await ghPush(); return; }
   if ((r.at||0) > (S._at||0)){ applyState(r.data); if (!quiet) toast('Đã cập nhật từ thiết bị khác'); }
   else if ((S._at||0) > (r.at||0)) await ghPush();
@@ -933,7 +915,7 @@ async function ghPull(quiet){
 }
 async function ghConnect(pin){
   const r = await sbLoad(pin);            // sai PIN sẽ ném lỗi ở đây
-  lset(SB.pinKey, pin); syncMode = 'gh';
+  syncMode = 'gh';
   if (r && r.exists && r.data){ applyState(mergeStates(r.data, S)); }
   else { S._at = Date.now(); }
   await sbSave(pin, S, S._at || Date.now()); setSync('ok');
@@ -976,28 +958,20 @@ async function claudeStart(){
 }
 
 /* ---- khởi động ---- */
-if (lget(SB.pinKey)) ghStart();
-else if (window.claude && typeof window.claude.use === 'function') claudeStart();
-else setSync('local');
+(async () => {
+  syncMode = 'gh'; setSync('slow'); ghLoops();
+  try{
+    if (!lget(SB.merged)){ await ghConnect(SB.pin); lset(SB.merged, '1'); }   // lần đầu trên máy này: gộp tiến độ
+    else await ghPull(true);
+  }catch(e){ syncMode = 'local'; setSync('err');
+    if (window.claude && typeof window.claude.use === 'function') claudeStart(); }
+})();
 
-/* ---- hộp thoại GitHub ---- */
-const openGh = () => { $('#ghModal').classList.add('show'); $('#ghToken').value = ''; $('#ghSt').textContent = syncMode==='gh' ? '✓ Máy này đang đồng bộ.' : ''; setTimeout(()=>$('#ghToken').focus(), 50); };
-const closeGh = () => $('#ghModal').classList.remove('show');
-$('#sync').addEventListener('click', openGh);
-$('#ghClose').onclick = closeGh;
-$('#ghModal').addEventListener('click', e => { if (e.target.id === 'ghModal') closeGh(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGh(); });
-$('#ghGo').onclick = async () => {
-  const t = $('#ghToken').value.trim();
-  if (t.length < 4){ $('#ghSt').textContent = 'PIN cần ít nhất 4 ký tự.'; return; }
-  $('#ghSt').textContent = 'Đang kết nối…';
-  try{ const created = await ghConnect(t); ghLoops();
-    $('#ghSt').textContent = created ? '✓ Đã tạo PIN và lưu tiến độ. Nhớ PIN này để nhập trên máy khác.' : '✓ Đã kết nối. Tiến độ của các máy đã được gộp lại.';
-    toast('Đã bật đồng bộ'); setTimeout(closeGh, created ? 2500 : 1000); }
-  catch(e){ lset(SB.pinKey, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local');
-    $('#ghSt').textContent = e.msg==='sai_pin' ? 'Sai PIN. Nhập đúng PIN đã đặt ở máy đầu tiên.' : 'Không kết nối được. Kiểm tra mạng rồi thử lại.'; }
-};
-$('#ghOff').onclick = () => { lset(SB.pinKey, ''); syncMode = docRef ? 'claude' : 'local'; setSync(syncMode==='claude' ? 'ok' : 'local'); $('#ghSt').textContent = 'Đã ngắt trên máy này. Tiến độ trên mạng vẫn còn.'; };
+$('#sync').addEventListener('click', async () => {
+  setSync('saving');
+  try{ syncMode = 'gh'; if (!lget(SB.merged)){ await ghConnect(SB.pin); lset(SB.merged,'1'); } else await ghPull(false); toast('Đã đồng bộ'); }
+  catch(e){ setSync('err'); toast('Chưa kết nối được, kiểm tra mạng rồi bấm lại'); }
+});
 
 function renderAll(){ renderHero(); renderToday(); renderUpcoming(); renderHabits(); renderStages(); renderWeeks(); renderProj(); renderGoal(); renderEv(); }
 renderAll();
