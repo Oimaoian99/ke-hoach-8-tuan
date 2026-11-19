@@ -303,6 +303,25 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
 .modal a{color:var(--pri);font-weight:600}
 .modal .x{float:right;border:0;background:var(--soft);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:18px;color:var(--ink2)}
 
+/* ---------- TỐI ƯU ---------- */
+.otag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:700;color:var(--oc);background:color-mix(in srgb,var(--oc) 13%,transparent);white-space:nowrap;margin-right:6px}
+.opills{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.opills>div{padding:14px 16px;border-radius:16px;background:var(--soft);min-width:0}
+.opills ul{margin:8px 0 0;padding-left:18px;font-size:14px}
+.opills li{margin:3px 0}
+.opills code{font:500 12.5px ui-monospace,Consolas,monospace;background:var(--card);padding:1px 5px;border-radius:5px;word-break:break-word}
+.otbl{overflow-x:auto}
+.otbl table{width:100%;min-width:620px;border-collapse:collapse;font-size:14px}
+.otbl th,.otbl td{padding:9px 10px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:middle}
+.otbl th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.otbl tr:last-child td{border-bottom:0}
+.otbl td span{display:block;font-size:12.5px;color:var(--muted)}
+.otbl .in{padding:8px 10px;font-variant-numeric:tabular-nums;min-width:80px}
+.otbl .goal{font-weight:700;color:var(--pri);white-space:nowrap}
+.orules{grid-template-columns:repeat(3,1fr)}
+#optToday .dr{border-top:0;padding-top:0}
+#optToday a{color:var(--pri);font-weight:600;font-size:14px}
+
 /* toast */
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,40px);opacity:0;background:var(--ink);color:var(--card);padding:11px 18px;border-radius:14px;font-weight:600;font-size:14px;z-index:100;transition:all .35s var(--ease);pointer-events:none;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
 .toast.show{transform:translate(-50%,0);opacity:1}
@@ -384,6 +403,7 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
         <button class="back" id="back" hidden>↺ Về hôm nay</button>
       </div>
 
+      <div class="card" style="--i:2" id="optToday"></div>
       <div class="card" style="--i:2">
         <div class="ttl"><h3>Ghi thành tích hôm nay</h3><span class="sub">có số càng tốt</span></div>
         <div class="addrow">
@@ -425,9 +445,38 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
     <div class="ttl"><h3>Từng tuần</h3><span class="sub">bấm để xem từng ngày</span></div>
     <div id="weeks"></div>
   </div>
+</section>
+
+<!-- ===== TỐI ƯU ===== -->
+<section id="s-opt">
+  <div class="card" style="--i:0">
+    <div class="ttl"><h3>Mốc tối ưu Tricky Story 3</h3><span class="sub">song song lộ trình chính · 30–45 phút/ngày</span></div>
+    <p class="muted" style="font-size:14px;margin:-6px 0 14px">Mỗi ngày một việc tối ưu, không lấn task dự án. Chủ đề từng tuần đi theo phần "Học" của lộ trình chính. Việc nào cũng có số trước/sau.</p>
+    <div class="stages" id="oStages"></div>
+  </div>
+  <div class="card" style="--i:1;margin-top:18px">
+    <div class="ttl"><h3>Hiện trạng</h3><span class="sub">quét project ngày 19/11</span></div>
+    <div class="opills" id="oFind"></div>
+  </div>
   <div class="card" style="--i:2;margin-top:18px">
-    <div class="ttl"><h3>Mốc tối ưu Tricky Story 3</h3><span class="sub">song song, mỗi ngày 30–45 phút</span></div>
-    <p class="muted" style="margin:6px 0 0">Dung lượng, bộ nhớ, hiệu năng, luồng, cấu trúc · có bảng số trước/sau. <a href="toi-uu/">Mở lộ trình tối ưu →</a></p>
+    <div class="ttl"><h3>Bảng số đo</h3><span class="sub">cùng 1 máy yếu, cùng màn, bản Development</span></div>
+    <div class="otbl"><table><thead><tr><th>Chỉ số</th><th>Trước</th><th>Mục tiêu</th><th>Sau</th></tr></thead><tbody id="oMetrics"></tbody></table></div>
+    <p class="muted" style="font-size:13px;margin:10px 0 0">Mục tiêu là đề xuất, chỉnh lại sau khi có số "Trước" ở tuần 1.</p>
+  </div>
+  <div class="card" style="--i:3;margin-top:18px">
+    <div class="ttl"><h3>Từng tuần</h3><span class="sub">bấm để xem từng ngày</span></div>
+    <div id="oWeeks"></div>
+  </div>
+  <div class="card" style="--i:4;margin-top:18px">
+    <div class="ttl"><h3>Nguyên tắc</h3></div>
+    <div class="rules orules">
+      <div><b>Dự án trước</b>Task dự án có nguy cơ trễ thì bỏ việc tối ưu hôm đó.</div>
+      <div><b>Không có số thì chưa xong</b>Ghi số trước/sau vào bảng. Không cải thiện thì hoàn tác.</div>
+      <div><b>Thay đổi nhỏ, tách riêng</b>Mỗi lần đổi import settings hay PlayerSettings là một commit riêng, test máy thật.</div>
+      <div><b>Báo team khi đụng bundle</b>Đổi import settings làm người chơi tải lại bundle. Gom vào một đợt phát hành.</div>
+      <div><b>Chặn tái phát</b>Sửa xong thì thêm luật tự động (AssetPostprocessor, test).</div>
+      <div><b>Hỏi trước khi xoá</b>Dọn file, đổi kiến trúc dùng chung: hỏi người phụ trách trước.</div>
+    </div>
   </div>
 </section>
 
@@ -587,7 +636,7 @@ const GOALS = [
 
 /* ================= TRẠNG THÁI ================= */
 const KEY = 'plan8w_v3';
-let S = {steps:{}, days:{}, hab:{}, ev:[], gt:{}, real:{}, pj:{}, ms:null, gName:'', gDate:'', pName:'', pGoal:'', pDone:''};
+let S = {opt:{}, optM:{}, steps:{}, days:{}, hab:{}, ev:[], gt:{}, real:{}, pj:{}, ms:null, gName:'', gDate:'', pName:'', pGoal:'', pDone:''};
 try{ const old = localStorage.getItem('plan8w_simple_v1'); const r = localStorage.getItem(KEY) || old; if (r){ const o = JSON.parse(r); if (o.gProj && !o.pName) o.pName = o.gProj; S = Object.assign(S, o); } }catch(e){}
 const P_DEF = {
   pName:'Tricky Story 3',
@@ -641,9 +690,10 @@ const ICONS = {
   map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
   proj:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>',
   goal:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
   cup:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M17 5h3v2a3 3 0 01-3 3M7 5H4v2a3 3 0 003 3"/>'
 };
-const TABS = [['s-today','Hôm nay','home'],['s-plan','Lộ trình','map'],['s-proj','Dự án','proj'],['s-goal','Mục tiêu','goal'],['s-ev','Thành tích','cup']];
+const TABS = [['s-today','Hôm nay','home'],['s-plan','Lộ trình','map'],['s-opt','Tối ưu','bolt'],['s-proj','Dự án','proj'],['s-goal','Mục tiêu','goal'],['s-ev','Thành tích','cup']];
 $('#nav').insertAdjacentHTML('beforeend', TABS.map(t => `<button data-t="${t[0]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[t[2]]}</svg><span>${t[1]}</span></button>`).join(''));
 function moveInd(){ const b = $('#nav button.on'), ind = $('#ind'); if (!b) return; ind.style.left = b.offsetLeft+'px'; ind.style.width = b.offsetWidth+'px'; }
 function show(id){
@@ -858,6 +908,125 @@ document.addEventListener('click', e => {
 document.addEventListener('keydown', e => { const p = e.target.closest && e.target.closest('.pill[data-hab]'); if (p && (e.key===' '||e.key==='Enter')){ e.preventDefault(); p.click(); } });
 
 
+/* ================= TỐI ƯU ================= */
+const OPT_TAG = {measure:['Đo lường','var(--ink2)'], size:['Dung lượng','var(--c1)'], ram:['Bộ nhớ','var(--c2)'], perf:['Hiệu năng','var(--c3)'], flow:['Luồng','var(--pri)'], arch:['Cấu trúc','var(--c6)']};
+const otag = k => `<span class="otag" style="--oc:${OPT_TAG[k][1]}">${OPT_TAG[k][0]}</span>`;
+const OPT_STAGES = [['Tuần 0–1','Đo','Biết đang ở đâu',0,1],['Tuần 2–3','Sửa dễ','CPU, rác bộ nhớ, RAM',2,3],['Tuần 4–6','Đào sâu','Chặn tái phát, build, hình ảnh',4,6],['Tuần 7–8','Bền vững','Cấu trúc, quy chuẩn, trình bày',7,8]];
+const OPT_WEEKS = [
+  ['Chọn máy đo, ghi số đầu tiên','Có máy test cố định và số dung lượng ban đầu'],
+  ['Vẽ luồng và đo baseline','Bảng số "Trước" đủ 8 dòng, sơ đồ 2 luồng chính'],
+  ['Dọn chỗ tốn CPU và rác bộ nhớ','5 chỗ chậm đã biết, 3 chỗ đã sửa · Check-in #1'],
+  ['Bộ nhớ: âm thanh, ảnh, bundle','RAM đỉnh giảm, bản update không bắt tải lại toàn bộ'],
+  ['Tối ưu sâu một chỗ + chặn tái phát','Bảng trước/sau giữa kỳ · Check-in #2'],
+  ['Dung lượng build + build tự động','Mỗi bản build tự in dung lượng, AAB nhỏ hơn'],
+  ['Hình ảnh mobile: draw call, canvas','Draw call menu giảm · Check-in #3'],
+  ['Cấu trúc: compile nhanh, ít phụ thuộc','Compile nhanh hơn, quy chuẩn tối ưu cho team'],
+  ['Chứng minh bằng số','Bảng trước/sau cuối kỳ · Check-in #4']
+];
+const OPT_DAYS = [
+  [0,'',"Chọn 1 máy Android yếu làm máy đo cố định, cài bản build Development.",'measure',"Máy đo cố định"],
+  [0,'',"Build bản release hiện tại, ghi dung lượng AAB/APK và top 20 asset nặng (Build Report).",'size',"Số dung lượng \"Trước\""],
+  [0,'T7–CN',"(Tuỳ chọn) Chụp lại PlayerSettings và QualitySettings Android hiện tại để so sánh về sau.",'measure',"Ảnh chụp cấu hình gốc"],
+  [1,'',"Bấm giờ compile sau khi sửa 1 script. Vẽ sơ đồ ai gọi AudioCtrl, DramaGameCtrl, UICtrl.",'arch',"Số compile + sơ đồ phụ thuộc"],
+  [1,'',"Vẽ luồng mở game: splash → khởi tạo Firebase, Ads, IAP, config → menu. Gắn Stopwatch log từng bước.",'flow',"Sơ đồ luồng mở game có số giây"],
+  [1,'',"Vẽ luồng vào màn: chọn level → tải Addressables → Instantiate → bấm được. Bấm giờ 3 màn nặng.",'flow',"Sơ đồ luồng vào màn có số giây"],
+  [1,'',"Profiler trên máy thật: RAM, frame time, GC Alloc ở menu và 2 màn nặng nhất.",'measure',"Số RAM và FPS \"Trước\""],
+  [1,'',"Điền đủ bảng số đo, gửi kèm cập nhật tuần cho sếp.",'measure',"Bảng \"Trước\" hoàn chỉnh"],
+  [2,'',"Profiler CPU: ghi top 5 hàm tốn nhất ở menu và màn nặng.",'perf',"Danh sách 5 chỗ chậm"],
+  [2,'',"Tắt log trong bản release: bọc Debug.Log bằng [Conditional] hoặc bỏ ENABLE_MYLOG khỏi release.",'perf',"574 lệnh log không chạy ở release"],
+  [2,'',"Sửa 7 UI tạo chuỗi mỗi frame (UIBoosterPack, UIResourceStars…): chỉ đổi text khi giá trị đổi.",'perf',"GC Alloc ở menu giảm"],
+  [2,'',"Cache Camera.main, xoá 9 Update() rỗng, rà 17 FindObjectOfType xem có chạy lặp không.",'perf',"Frame time đo lại"],
+  [2,'',"Check-in #1: báo 5 chỗ chậm và số đã sửa.",'measure',"Sếp thấy số"],
+  [3,'',"SFX: bật Force To Mono, sample rate 22 kHz. Làm thử 1 thư mục, nghe lại, rồi áp toàn bộ.",'ram',"RAM âm thanh trước/sau"],
+  [3,'',"Nhạc nền dài: chuyển sang Streaming. Đo lại RAM.",'ram',"RAM đỉnh giảm"],
+  [3,'',"Tắt Read/Write 69 ảnh (tìm GetPixel trong code trước), hạ 183 ảnh ≥ 4096 xuống 2048 nếu nhìn không khác.",'ram',"RAM texture giảm"],
+  [3,'',"Kiểm tra Addressables có Release khi rời màn không (Memory Profiler trước và sau 3 màn liên tiếp).",'ram',"Không rò RAM giữa các màn"],
+  [3,'',"Thay Caching.ClearCache() khi đổi version bằng Addressables.CleanBundleCache(): chỉ xoá bundle cũ.",'flow',"Bản update không bắt tải lại toàn bộ"],
+  [4,'',"Đo lại cả bảng. Chọn chỉ số còn xa mục tiêu nhất để đào sâu.",'measure',"Bảng giữa kỳ"],
+  [4,'',"Viết AssetPostprocessor tự áp chuẩn: ảnh Android ASTC, tối đa 2048; SFX mono.",'size',"Asset mới tự đúng chuẩn"],
+  [4,'',"Nhờ AI viết EditMode test quét asset sai chuẩn và test tải/giải phóng 1 level Addressables. Tự kiểm lại.",'measure',"2 bài test chạy được"],
+  [4,'',"Đào sâu chỉ số đã chọn (thường là thời gian vào màn): dời khởi tạo nặng sang sau khi màn hiện.",'flow',"Số trước/sau của chỉ số đó"],
+  [4,'',"Check-in #2 với bảng trước/sau.",'measure',"Ít nhất 1 chỉ số tốt hơn 20%"],
+  [5,'',"Managed Stripping = Medium, bật Strip Engine Code. Thêm link.xml cho Firebase/IAP nếu crash. Test luồng mua và quảng cáo.",'size',"Dung lượng trước/sau"],
+  [5,'',"Chuyển sang AAB (hoặc tách APK theo kiến trúc). Ghi dung lượng tải thật trên store.",'size',"Dung lượng tải giảm"],
+  [5,'',"Script build in dung lượng và top 20 asset nặng sau mỗi lần build, so với bản trước.",'measure',"Báo cáo dung lượng tự động"],
+  [5,'',"Dời 1 nhóm asset trong Resources chỉ dùng theo màn sang Addressables.",'size',"Resources nhỏ đi"],
+  [5,'',"Đưa công cụ kiểm tra asset cho game designer và hoạ sĩ dùng thử.",'arch',"Có người dùng tool"],
+  [6,'',"Frame Debugger ở menu: đếm draw call. Tạo SpriteAtlas cho UI chung (nút, icon, popup).",'perf',"Draw call menu trước/sau"],
+  [6,'',"Tách canvas: phần tĩnh riêng, phần có số chạy (timer, tiền) riêng. Tắt Raycast Target ở ảnh không bấm.",'perf',"Ít rebuild canvas hơn"],
+  [6,'',"Atlas cho 1–2 màn nặng nhất; xem overdraw (nền chồng nhau, particle).",'perf',"Draw call màn nặng giảm"],
+  [6,'',"Đo lại FPS và draw call; check-in #3.",'measure',"Số trước/sau"],
+  [6,'',"Nghỉ Tết Dương lịch",'',""],
+  [7,'',"Tách asmdef: Core, UI, Levels, Minigames, Editor. Đo lại thời gian compile.",'arch',"Compile trước/sau"],
+  [7,'',"Giảm gọi thẳng AudioCtrl.Instance: thêm API nhỏ hoặc event, áp cho code mới và 1 module mẫu. Không viết lại toàn bộ.",'arch',"1 module ít phụ thuộc"],
+  [7,'',"Chuyển giá trị hard-code của 1 module sang ScriptableObject; tách phần đang đụng trong UIScreenMainMenu.",'arch',"File nhỏ hơn, dễ chỉnh"],
+  [7,'',"Dọn rác (hỏi team trước): ResourcesOld, IAP.zip, PSD lớn trong Scripts/, scene test.",'arch',"Project nhẹ, import nhanh"],
+  [7,'',"Viết \"Quy chuẩn tối ưu\" 1 trang: chuẩn ảnh, âm thanh, code Update, Addressables.",'arch',"Team có checklist"],
+  [8,'',"Đo lại cả bảng trên cùng máy, cùng điều kiện như tuần 1.",'measure',"Bảng \"Sau\" hoàn chỉnh"],
+  [8,'',"Chọn 3 con số mạnh nhất, vẽ biểu đồ trước/sau.",'measure',"3 biểu đồ"],
+  [8,'',"Làm slide \"Tối ưu TS3: từ số đo đến quy chuẩn\".",'measure',"Slide"],
+  [8,'',"Chia sẻ team; đề xuất danh sách việc tối ưu tiếp theo.",'arch',"Backlog tối ưu"],
+  [8,'',"Check-in #4: nộp bảng số.",'measure',"Xong lộ trình"]
+];
+const OPT_METRICS = [
+  ['Dung lượng tải (AAB/APK)','Build Report, kích thước trên store','−20%'],
+  ['Thời gian mở game → menu','Stopwatch log từ splash đến menu bấm được','−20%'],
+  ['Thời gian vào màn (đã cache)','Bấm chơi → màn bấm được, 3 màn nặng','−20%'],
+  ['RAM đỉnh ở màn nặng nhất','Memory Profiler, Total Committed','−20%'],
+  ['Frame time ở màn nặng','Profiler máy thật, trung bình 30 giây','≤ 16,6 ms'],
+  ['Rác bộ nhớ mỗi frame ở menu','Profiler, GC Alloc khi đứng yên','0 B'],
+  ['Draw call ở menu','Frame Debugger','−40%'],
+  ['Compile sau khi sửa 1 script','Từ lưu file đến Editor dùng được','−30%']
+];
+const OPT_FIND = [
+  ['size',['<code>Assets/Project/Resources</code> 199 MB, tất cả bị đóng vào APK','Strip Engine Code tắt, chưa đặt Managed Stripping cho Android','APK chung cho ARMv7 + ARM64','183 ảnh max size ≥ 4096, ~2.500 ảnh chưa có override Android']],
+  ['ram',['14.149 file âm thanh: stereo, Decompress On Load','69 ảnh bật Read/Write (tốn gấp đôi RAM)','0 SpriteAtlas']],
+  ['perf',['574 lệnh <code>Debug.Log</code>, define <code>ENABLE_MYLOG</code> bật trên Android','7 UI tạo chuỗi mới mỗi frame trong <code>Update()</code>','75 <code>Camera.main</code>, 17 <code>FindObjectOfType</code>, 9 <code>Update()</code> rỗng','1.693 <code>new WaitForSeconds</code>']],
+  ['flow',['Một scene chính <code>DramaGame</code>: Firebase, Ads, IAP khởi tạo ngay khi mở game','Đổi version thì gọi <code>Caching.ClearCache()</code>: người chơi tải lại mọi bundle sau mỗi bản cập nhật','331 prefab level tải qua Addressables']],
+  ['arch',['1.794 script, chỉ 2 module có asmdef, phần còn lại compile chung một khối','<code>AudioCtrl.Instance</code> gọi 1.615 lần, <code>DramaGameCtrl.Instance</code> 842 lần','File lớn: <code>Level_TileMatch</code> 3.918 dòng, <code>UIScreenMainMenu</code> 1.873 dòng','Rác: <code>ResourcesOld</code> 67 MB, <code>IAP.zip</code> và PSD 140 MB trong <code>Scripts/</code>']]
+];
+const OLIST = (() => { const c = {}; return OPT_DAYS.map(d => { const w = d[0], i = c[w] = (c[w]===undefined?0:c[w]+1);
+  const date = new Date(wStart(w).getTime() + i*DAY);
+  return {w, key:`o${w}_${i}`, date, short: d[1] || (DOW[date.getDay()]+' '+fmt(date)), task:d[2], tag:d[3], res:d[4], off:!d[3]}; }); })();
+const openO = new Set([curWeek()]);
+function renderOpt(){
+  const cw = curWeek(), ti = iso(today());
+  $('#oStages').innerHTML = OPT_STAGES.map(s => { const c = cw>=s[3] && cw<=s[4], p = cw>s[4];
+    return `<div class="stg${c?' cur':''}${p?' past':''}">${c?'<i class="now"></i>':''}<div class="w">${s[0]} · ${fmt(wStart(s[3]))}–${fmt(wEnd(s[4]))}</div><b>${s[1]}</b><span>${s[2]}</span></div>`; }).join('');
+  $('#oFind').innerHTML = OPT_FIND.map(f => `<div>${otag(f[0])}<ul>${f[1].map(x => `<li>${x}</li>`).join('')}</ul></div>`).join('');
+  if (!$('#oMetrics').contains(document.activeElement))
+    $('#oMetrics').innerHTML = OPT_METRICS.map((m,i) => `<tr><td><b>${m[0]}</b><span>${m[1]}</span></td>
+      <td><input class="in" data-om="m${i}b" aria-label="${m[0]} trước" value="${esc(S.optM['m'+i+'b'])}"></td><td class="goal">${m[2]}</td>
+      <td><input class="in" data-om="m${i}a" aria-label="${m[0]} sau" value="${esc(S.optM['m'+i+'a'])}"></td></tr>`).join('');
+  $('#oWeeks').innerHTML = OPT_WEEKS.map((w,i) => { const ds = OLIST.filter(d => d.w===i && !d.off), n = ds.filter(d => S.opt[d.key]).length;
+    return `<div class="wk${i===cw?' cur':''}${openO.has(i)?' open':''}${n===ds.length?' full':''}" data-w="${i}">
+      <button class="wkh" aria-expanded="${openO.has(i)}"><span class="wkn">${n===ds.length?'✓':i}</span><span class="wkt"><b>${w[0]}</b><span>${fmt(wStart(i))}–${fmt(wEnd(i))} · Học: ${WEEKS[i][1]}</span></span><span class="wkp">${n}/${ds.length}</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="wkb"><div><div class="days">
+        <div class="muted" style="font-size:13px;padding:0 0 6px"><b style="color:var(--ink2)">Kết quả tuần:</b> ${w[1]}</div>
+        ${OLIST.filter(d => d.w===i).map(d => `<div class="dr${S.opt[d.key]?' ok':''}${iso(d.date)===ti?' isT':''}">
+          ${d.off?'<span style="width:22px"></span>':`<input type="checkbox" class="cb" data-okey="${d.key}" ${S.opt[d.key]?'checked':''} aria-label="Xong tối ưu ${d.short}">`}
+          <span class="dd">${d.short}</span><span class="tx"><b>${esc(d.task)}</b>${d.off?'':`<span>${otag(d.tag)}Đạt: ${esc(d.res)}</span>`}</span></div>`).join('')}
+      </div></div></div></div>`; }).join('');
+}
+function renderOptToday(){
+  const t = today(), ti = iso(t);
+  let d = OLIST.find(x => !x.off && iso(x.date)===ti), lbl = 'Tối ưu hôm nay';
+  if (!d){ d = OLIST.find(x => !x.off && x.date > t && !S.opt[x.key]); lbl = 'Việc tối ưu tiếp theo'; }
+  $('#optToday').innerHTML = !d ? `<div class="ttl"><h3>Tối ưu</h3></div><p class="muted">Đã xong lộ trình tối ưu 🎉</p>` :
+    `<div class="ttl"><h3>${lbl}</h3><span class="tag">${d.short}</span></div>
+     <div class="dr${S.opt[d.key]?' ok':''}"><input type="checkbox" class="cb" data-okey="${d.key}" ${S.opt[d.key]?'checked':''} aria-label="Xong tối ưu ${d.short}">
+     <span class="tx"><b>${esc(d.task)}</b><span>${otag(d.tag)}Đạt: ${esc(d.res)}</span></span></div>
+     <a href="#" data-goopt>Xem lộ trình tối ưu →</a>`;
+}
+function tickOpt(e){ const k = e.target.dataset && e.target.dataset.okey; if (!k) return; S.opt[k] = e.target.checked; save();
+  if (e.target.checked){ confetti(e.target); toast('Xong việc tối ưu 💪'); } renderOpt(); renderOptToday(); }
+$('#oWeeks').addEventListener('change', tickOpt); $('#optToday').addEventListener('change', tickOpt);
+$('#optToday').addEventListener('click', e => { if (e.target.closest('[data-goopt]')){ e.preventDefault(); show('s-opt'); } });
+$('#oWeeks').addEventListener('click', e => { const h = e.target.closest('.wkh'); if (!h) return; const wk = h.parentElement, i = +wk.dataset.w;
+  wk.classList.toggle('open'); wk.classList.contains('open') ? openO.add(i) : openO.delete(i); h.setAttribute('aria-expanded', wk.classList.contains('open')); });
+$('#oMetrics').addEventListener('input', e => { const k = e.target.dataset.om; if (!k) return; S.optM[k] = e.target.value; save(); });
+
 /* ================= ĐỒNG BỘ ================= */
 const DEV = Math.random().toString(36).slice(2);
 const SYNC_TXT = {ok:'☁ Đã đồng bộ', saving:'☁ Đang lưu…', local:'💾 Chỉ lưu trên máy này', slow:'☁ Đang kết nối…', err:'⚠ Chưa đồng bộ được · bấm để thử lại', auth:'⚠ Sai PIN · bấm để nhập lại'};
@@ -881,7 +1050,7 @@ function schedulePush(){
 function mergeStates(a, b){
   const o = Object.assign({}, a, b);
   const orMap = k => { const r = Object.assign({}, a[k]||{}); for (const x in (b[k]||{})) r[x] = !!(r[x] || b[k][x]); return r; };
-  o.days = orMap('days'); o.pj = orMap('pj');
+  o.days = orMap('days'); o.pj = orMap('pj'); o.opt = orMap('opt'); o.optM = Object.assign({}, a.optM||{}, b.optM||{});
   o.steps = {}; new Set([...Object.keys(a.steps||{}), ...Object.keys(b.steps||{})]).forEach(k => { const x = (a.steps||{})[k]||[], y = (b.steps||{})[k]||[]; o.steps[k] = [0,1,2].map(i => !!(x[i]||y[i])); if (o.steps[k].every(Boolean)) o.days[k] = true; });
   o.hab = {}; new Set([...Object.keys(a.hab||{}), ...Object.keys(b.hab||{})]).forEach(k => { const x = (a.hab||{})[k]||[], y = (b.hab||{})[k]||[]; o.hab[k] = [0,1,2].map(i => !!(x[i]||y[i])); });
   const seen = new Set(); o.ev = [...(a.ev||[]), ...(b.ev||[])].filter(e => { const id = e.d+'|'+e.c+'|'+e.t; if (seen.has(id)) return false; seen.add(id); return true; });
@@ -977,7 +1146,7 @@ $('#sync').addEventListener('click', async () => {
   catch(e){ setSync('err'); toast('Chưa kết nối được, kiểm tra mạng rồi bấm lại'); }
 });
 
-function renderAll(){ renderHero(); renderToday(); renderUpcoming(); renderHabits(); renderStages(); renderWeeks(); renderProj(); renderGoal(); renderEv(); }
+function renderAll(){ renderHero(); renderToday(); renderUpcoming(); renderHabits(); renderStages(); renderWeeks(); renderProj(); renderGoal(); renderEv(); renderOpt(); renderOptToday(); }
 renderAll();
 let first = 's-today'; try{ first = localStorage.getItem(KEY+'_tab') || first; }catch(e){}
 show(TABS.some(t=>t[0]===first) ? first : 's-today');
