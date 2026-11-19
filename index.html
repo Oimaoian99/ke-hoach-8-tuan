@@ -311,12 +311,18 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
 .opills li{margin:3px 0}
 .opills code{font:500 12.5px ui-monospace,Consolas,monospace;background:var(--card);padding:1px 5px;border-radius:5px;word-break:break-word}
 .otbl{overflow-x:auto}
-.otbl table{width:100%;min-width:620px;border-collapse:collapse;font-size:14px}
+.otbl table{width:100%;min-width:1080px;border-collapse:collapse;font-size:14px}
 .otbl th,.otbl td{padding:9px 10px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:middle}
 .otbl th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .otbl tr:last-child td{border-bottom:0}
 .otbl td span{display:block;font-size:12.5px;color:var(--muted)}
-.otbl .in{padding:8px 10px;font-variant-numeric:tabular-nums;min-width:80px}
+.otbl .in{padding:8px 10px;font-variant-numeric:tabular-nums;min-width:72px}
+.otbl th:first-child,.otbl td:first-child{position:sticky;left:0;background:var(--card);z-index:1;min-width:210px}
+@media (max-width:820px){.otbl th:first-child,.otbl td:first-child{min-width:140px;max-width:150px}}
+.otbl th.cw{color:var(--pri)}
+.otbl td.cw .in{border-color:color-mix(in srgb,var(--pri) 45%,transparent)}
+.otbl .dlt{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.otbl .dlt.up{color:var(--good)} .otbl .dlt.down{color:#dc2626}
 .otbl .goal{font-weight:700;color:var(--pri);white-space:nowrap}
 .orules{grid-template-columns:repeat(3,1fr)}
 #optToday .dr{border-top:0;padding-top:0}
@@ -460,8 +466,8 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
   </div>
   <div class="card" style="--i:2;margin-top:18px">
     <div class="ttl"><h3>Bảng số đo</h3><span class="sub">cùng 1 máy yếu, cùng màn, bản Development</span></div>
-    <div class="otbl"><table><thead><tr><th>Chỉ số</th><th>Trước</th><th>Mục tiêu</th><th>Sau</th></tr></thead><tbody id="oMetrics"></tbody></table></div>
-    <p class="muted" style="font-size:13px;margin:10px 0 0">Mục tiêu là đề xuất, chỉnh lại sau khi có số "Trước" ở tuần 1.</p>
+    <div class="otbl"><table><thead id="oMHead"></thead><tbody id="oMetrics"></tbody></table></div>
+    <p class="muted" style="font-size:13px;margin:10px 0 0">Tuần 1 là số "Trước". Mỗi cuối tuần đo lại và ghi vào cột tuần đó, bỏ trống tuần không đo. Cột "Thay đổi" tự tính từ số đầu tiên đến số mới nhất. Mục tiêu là đề xuất, chỉnh lại sau tuần 1.</p>
   </div>
   <div class="card" style="--i:3;margin-top:18px">
     <div class="ttl"><h3>Từng tuần</h3><span class="sub">bấm để xem từng ngày</span></div>
@@ -994,10 +1000,12 @@ function renderOpt(){
   $('#oStages').innerHTML = OPT_STAGES.map(s => { const c = cw>=s[3] && cw<=s[4], p = cw>s[4];
     return `<div class="stg${c?' cur':''}${p?' past':''}">${c?'<i class="now"></i>':''}<div class="w">${s[0]} · ${fmt(wStart(s[3]))}–${fmt(wEnd(s[4]))}</div><b>${s[1]}</b><span>${s[2]}</span></div>`; }).join('');
   $('#oFind').innerHTML = OPT_FIND.map(f => `<div>${otag(f[0])}<ul>${f[1].map(x => `<li>${x}</li>`).join('')}</ul></div>`).join('');
+  $('#oMHead').innerHTML = `<tr><th>Chỉ số</th><th>Mục tiêu</th>${[1,2,3,4,5,6,7,8].map(w => `<th class="${w===cw?'cw':''}">Tuần ${w}${w===1?' · Trước':''}</th>`).join('')}<th>Thay đổi</th></tr>`;
   if (!$('#oMetrics').contains(document.activeElement))
-    $('#oMetrics').innerHTML = OPT_METRICS.map((m,i) => `<tr><td><b>${m[0]}</b><span>${m[1]}</span></td>
-      <td><input class="in" data-om="m${i}b" aria-label="${m[0]} trước" value="${esc(S.optM['m'+i+'b'])}"></td><td class="goal">${m[2]}</td>
-      <td><input class="in" data-om="m${i}a" aria-label="${m[0]} sau" value="${esc(S.optM['m'+i+'a'])}"></td></tr>`).join('');
+    $('#oMetrics').innerHTML = OPT_METRICS.map((m,i) => `<tr><td><b>${m[0]}</b><span>${m[1]}</span></td><td class="goal">${m[2]}</td>
+      ${[1,2,3,4,5,6,7,8].map(w => `<td class="${w===cw?'cw':''}"><input class="in" data-om="${omKey(i,w)}" aria-label="${m[0]} tuần ${w}" value="${esc(S.optM[omKey(i,w)])}"></td>`).join('')}
+      <td class="dlt" id="od${i}"></td></tr>`).join('');
+  OPT_METRICS.forEach((m,i) => paintDelta(i));
   $('#oWeeks').innerHTML = OPT_WEEKS.map((w,i) => { const ds = OLIST.filter(d => d.w===i && !d.off), n = ds.filter(d => S.opt[d.key]).length;
     return `<div class="wk${i===cw?' cur':''}${openO.has(i)?' open':''}${n===ds.length?' full':''}" data-w="${i}">
       <button class="wkh" aria-expanded="${openO.has(i)}"><span class="wkn">${n===ds.length?'✓':i}</span><span class="wkt"><b>${w[0]}</b><span>${fmt(wStart(i))}–${fmt(wEnd(i))} · Học: ${WEEKS[i][1]}</span></span><span class="wkp">${n}/${ds.length}</span>
@@ -1008,6 +1016,16 @@ function renderOpt(){
           ${d.off?'<span style="width:22px"></span>':`<input type="checkbox" class="cb" data-okey="${d.key}" ${S.opt[d.key]?'checked':''} aria-label="Xong tối ưu ${d.short}">`}
           <span class="dd">${d.short}</span><span class="tx"><b>${esc(d.task)}</b>${d.off?'':`<span>${otag(d.tag)}Đạt: ${esc(d.res)}</span>`}</span></div>`).join('')}
       </div></div></div></div>`; }).join('');
+}
+// tuần 1 = 'b', tuần 8 = 'a' (giữ khoá cũ), tuần 2–7 = 'w2'…'w7'
+const omKey = (i,w) => 'm'+i+(w===1?'b':w===8?'a':'w'+w);
+function paintDelta(i){
+  const nums = [1,2,3,4,5,6,7,8].map(w => parseFloat(String(S.optM[omKey(i,w)]||'').replace(',','.').replace(/[^\d.\-]/g,''))).filter(x => !isNaN(x));
+  const el = $('#od'+i); if (!el) return;
+  if (nums.length < 2 || nums[0] === 0){ el.textContent = '–'; el.className = 'dlt'; return; }
+  const pct = (nums[nums.length-1] - nums[0]) / Math.abs(nums[0]) * 100;   // mọi chỉ số đều càng thấp càng tốt
+  el.textContent = (pct > 0 ? '+' : pct < 0 ? '−' : '') + Math.abs(pct).toFixed(1).replace('.',',') + '%';
+  el.className = 'dlt ' + (pct < 0 ? 'up' : pct > 0 ? 'down' : '');
 }
 function renderOptToday(){
   const t = today(), ti = iso(t);
@@ -1025,7 +1043,7 @@ $('#oWeeks').addEventListener('change', tickOpt); $('#optToday').addEventListene
 $('#optToday').addEventListener('click', e => { if (e.target.closest('[data-goopt]')){ e.preventDefault(); show('s-opt'); } });
 $('#oWeeks').addEventListener('click', e => { const h = e.target.closest('.wkh'); if (!h) return; const wk = h.parentElement, i = +wk.dataset.w;
   wk.classList.toggle('open'); wk.classList.contains('open') ? openO.add(i) : openO.delete(i); h.setAttribute('aria-expanded', wk.classList.contains('open')); });
-$('#oMetrics').addEventListener('input', e => { const k = e.target.dataset.om; if (!k) return; S.optM[k] = e.target.value; save(); });
+$('#oMetrics').addEventListener('input', e => { const k = e.target.dataset.om; if (!k) return; S.optM[k] = e.target.value; save(); paintDelta(+k.match(/^m(\d+)/)[1]); });
 
 /* ================= ĐỒNG BỘ ================= */
 const DEV = Math.random().toString(36).slice(2);
