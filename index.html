@@ -324,7 +324,7 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
 .otbl .dlt{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
 .otbl .dlt.up{color:var(--good)} .otbl .dlt.down{color:#dc2626}
 .otbl .goal{font-weight:700;color:var(--pri);white-space:nowrap}
-.orules{grid-template-columns:repeat(3,1fr)}
+.orules{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 #optToday .dr{border-top:0;padding-top:0}
 .dr .tx .og{display:inline;font-size:13px;font-weight:700;color:var(--ink2)}
 #optToday a{color:var(--pri);font-weight:600;font-size:14px}
@@ -483,6 +483,7 @@ label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink2)}
       <div><b>Báo team khi đụng bundle</b>Đổi import settings làm người chơi tải lại bundle. Gom vào một đợt phát hành.</div>
       <div><b>Chặn tái phát</b>Sửa xong thì thêm luật tự động (AssetPostprocessor, test).</div>
       <div><b>Hỏi trước khi xoá</b>Dọn file, đổi kiến trúc dùng chung: hỏi người phụ trách trước.</div>
+      <div><b>Không đụng SDK</b>Firebase, quảng cáo, IAP, analytics và mọi thứ trong Firebase/, GamePlugin/, Plugins/, ExternalDependencyManager/: chỉ đo, không sửa code, setting hay asset.</div>
     </div>
   </div>
 </section>
@@ -935,7 +936,7 @@ const OPT_DAYS = [
   [0,'',"Build bản release hiện tại, ghi dung lượng AAB/APK và top 20 asset nặng (Build Report).",'size',"Số MB của AAB/APK + danh sách 20 asset nặng nhất kèm MB"],
   [0,'T7–CN',"(Tuỳ chọn) Chụp lại PlayerSettings và QualitySettings Android hiện tại để so sánh về sau.",'measure',"2 ảnh chụp cấu hình gốc lưu vào thư mục ghi chú"],
   [1,'',"Bấm giờ compile sau khi sửa 1 script (3 lần, lấy trung bình). Vẽ sơ đồ ai gọi AudioCtrl, DramaGameCtrl, UICtrl.",'arch',"Số giây compile trung bình 3 lần · sơ đồ 3 singleton với ≥ 10 lớp gọi nhiều nhất"],
-  [1,'',"Vẽ luồng mở game: splash → khởi tạo Firebase, Ads, IAP, config → menu. Gắn Stopwatch log từng bước.",'flow',"Sơ đồ ≥ 5 bước, bước nào cũng có số ms · tổng số giây mở game"],
+  [1,'',"Vẽ luồng mở game: splash → khởi tạo → menu. Gắn Stopwatch log từng bước (chỉ đo phần SDK, không sửa).",'flow',"Sơ đồ ≥ 5 bước, bước nào cũng có số ms · tổng số giây mở game"],
   [1,'',"Vẽ luồng vào màn: chọn level → tải Addressables → Instantiate → bấm được. Bấm giờ 3 màn nặng.",'flow',"3 màn × 3 lần đo · số giây trung bình từng bước"],
   [1,'',"Profiler trên máy thật: RAM, frame time, GC Alloc ở menu và 2 màn nặng nhất.",'measure',"3 chỗ đo × 3 số: RAM đỉnh (MB), frame time (ms), GC (KB/frame)"],
   [1,'',"Điền đủ bảng số đo, gửi kèm cập nhật tuần cho sếp.",'measure',"8/8 ô cột Tuần 1 có số · đã gửi sếp"],
@@ -950,11 +951,11 @@ const OPT_DAYS = [
   [3,'',"Kiểm tra Addressables có Release khi rời màn không (Memory Profiler trước và sau 3 màn liên tiếp).",'ram',"Sau mỗi màn RAM về lại trong ±5% mức ban đầu"],
   [3,'',"Thay Caching.ClearCache() khi đổi version bằng Addressables.CleanBundleCache(): chỉ xoá bundle cũ.",'flow',"Bản update thử chỉ tải lại bundle đổi (ghi MB) thay vì toàn bộ"],
   [4,'',"Đo lại cả bảng. Chọn chỉ số còn xa mục tiêu nhất để đào sâu.",'measure',"8/8 ô cột Tuần 4 có số · chọn 1 chỉ số"],
-  [4,'',"Viết AssetPostprocessor tự áp chuẩn: ảnh Android ASTC, tối đa 2048; SFX mono.",'size',"Thử 5 file mẫu: 5/5 tự đúng chuẩn khi import"],
+  [4,'',"Viết AssetPostprocessor tự áp chuẩn cho Assets/Project: ảnh Android ASTC, tối đa 2048; SFX mono. Bỏ qua thư mục SDK.",'size',"Thử 5 file mẫu: 5/5 tự đúng chuẩn khi import"],
   [4,'',"Nhờ AI viết EditMode test quét asset sai chuẩn và test tải/giải phóng 1 level Addressables. Tự kiểm lại.",'measure',"2/2 test chạy xanh · ghi số phút làm có AI so với ước lượng tự viết"],
-  [4,'',"Đào sâu chỉ số đã chọn (thường là thời gian vào màn): dời khởi tạo nặng sang sau khi màn hiện.",'flow',"Chỉ số đã chọn tốt hơn ≥ 20% so với Tuần 1"],
+  [4,'',"Đào sâu chỉ số đã chọn (thường là thời gian vào màn): dời khởi tạo nặng của code game sang sau khi màn hiện.",'flow',"Chỉ số đã chọn tốt hơn ≥ 20% so với Tuần 1"],
   [4,'',"Check-in #2 với bảng trước/sau.",'measure',"≥ 1 chỉ số tốt hơn ≥ 20% trình sếp"],
-  [5,'',"Managed Stripping = Medium, bật Strip Engine Code. Thêm link.xml cho Firebase/IAP nếu crash. Test luồng mua và quảng cáo.",'size',"Build nhỏ hơn ≥ 5 MB · 0 crash ở 3 luồng: mua, xem quảng cáo, đăng nhập"],
+  [5,'',"Thêm override Android (ASTC) cho ~2.500 ảnh còn thiếu trong Assets/Project. Làm theo từng thư mục, so ảnh trước/sau.",'size',"2.500/2.500 ảnh có override · build nhỏ hơn ≥ 5 MB"],
   [5,'',"Chuyển sang AAB (hoặc tách APK theo kiến trúc). Ghi dung lượng tải thật trên store.",'size',"Dung lượng tải giảm ≥ 20% so với Tuần 1"],
   [5,'',"Script build in dung lượng và top 20 asset nặng sau mỗi lần build, so với bản trước.",'measure',"Chạy thử 2 lần build, cả 2 lần tự in MB + top 20"],
   [5,'',"Dời 1 nhóm asset trong Resources chỉ dùng theo màn sang Addressables.",'size',"Resources giảm ≥ 30 MB (199 → ≤ 169 MB)"],
@@ -964,10 +965,10 @@ const OPT_DAYS = [
   [6,'',"Atlas cho 1–2 màn nặng nhất; xem overdraw (nền chồng nhau, particle).",'perf',"Draw call 2 màn nặng giảm ≥ 30%"],
   [6,'',"Đo lại FPS và draw call; check-in #3.",'measure',"Ghi frame time + draw call vào cột Tuần 6 · trình sếp"],
   [6,'',"Nghỉ Tết Dương lịch",'',""],
-  [7,'',"Tách asmdef: Core, UI, Levels, Minigames, Editor. Đo lại thời gian compile.",'arch',"≥ 5 asmdef · compile nhanh hơn ≥ 30%"],
+  [7,'',"Tách asmdef trong Assets/Project: Core, UI, Levels, Minigames, Editor. Không đặt asmdef vào thư mục SDK. Đo lại thời gian compile.",'arch',"≥ 5 asmdef · compile nhanh hơn ≥ 30%"],
   [7,'',"Giảm gọi thẳng AudioCtrl.Instance: thêm API nhỏ hoặc event, áp cho code mới và 1 module mẫu. Không viết lại toàn bộ.",'arch',"Số chỗ gọi AudioCtrl.Instance giảm ≥ 50 (từ 1.615)"],
   [7,'',"Chuyển giá trị hard-code của 1 module sang ScriptableObject; tách phần đang đụng trong UIScreenMainMenu.",'arch',"≥ 1 ScriptableObject config · UIScreenMainMenu bớt ≥ 300 dòng (từ 1.873)"],
-  [7,'',"Dọn rác (hỏi team trước): ResourcesOld, IAP.zip, PSD lớn trong Scripts/, scene test.",'arch',"Dọn ≥ 500 MB · ghi thời gian import lại trước/sau"],
+  [7,'',"Dọn rác (hỏi team trước): ResourcesOld, PSD lớn trong Scripts/, scene test. Không xoá gì thuộc SDK.",'arch',"Dọn ≥ 500 MB · ghi thời gian import lại trước/sau"],
   [7,'',"Viết \"Quy chuẩn tối ưu\" 1 trang: chuẩn ảnh, âm thanh, code Update, Addressables.",'arch',"1 trang, ≥ 10 mục kiểm tra · gửi ≥ 3 người"],
   [8,'',"Đo lại cả bảng trên cùng máy, cùng điều kiện như tuần 1.",'measure',"8/8 ô cột Tuần 8 có số"],
   [8,'',"Chọn 3 con số mạnh nhất, vẽ biểu đồ trước/sau.",'measure',"3 biểu đồ, biểu đồ nào cũng có % thay đổi"],
@@ -986,11 +987,11 @@ const OPT_METRICS = [
   ['Compile sau khi sửa 1 script','Từ lưu file đến Editor dùng được','−30%']
 ];
 const OPT_FIND = [
-  ['size',['<code>Assets/Project/Resources</code> 199 MB, tất cả bị đóng vào APK','Strip Engine Code tắt, chưa đặt Managed Stripping cho Android','APK chung cho ARMv7 + ARM64','183 ảnh max size ≥ 4096, ~2.500 ảnh chưa có override Android']],
+  ['size',['<code>Assets/Project/Resources</code> 199 MB, tất cả bị đóng vào APK','APK chung cho ARMv7 + ARM64','183 ảnh max size ≥ 4096, ~2.500 ảnh chưa có override Android']],
   ['ram',['14.149 file âm thanh: stereo, Decompress On Load','69 ảnh bật Read/Write (tốn gấp đôi RAM)','0 SpriteAtlas']],
   ['perf',['574 lệnh <code>Debug.Log</code>, define <code>ENABLE_MYLOG</code> bật trên Android','7 UI tạo chuỗi mới mỗi frame trong <code>Update()</code>','75 <code>Camera.main</code>, 17 <code>FindObjectOfType</code>, 9 <code>Update()</code> rỗng','1.693 <code>new WaitForSeconds</code>']],
-  ['flow',['Một scene chính <code>DramaGame</code>: Firebase, Ads, IAP khởi tạo ngay khi mở game','Đổi version thì gọi <code>Caching.ClearCache()</code>: người chơi tải lại mọi bundle sau mỗi bản cập nhật','331 prefab level tải qua Addressables']],
-  ['arch',['1.794 script, chỉ 2 module có asmdef, phần còn lại compile chung một khối','<code>AudioCtrl.Instance</code> gọi 1.615 lần, <code>DramaGameCtrl.Instance</code> 842 lần','File lớn: <code>Level_TileMatch</code> 3.918 dòng, <code>UIScreenMainMenu</code> 1.873 dòng','Rác: <code>ResourcesOld</code> 67 MB, <code>IAP.zip</code> và PSD 140 MB trong <code>Scripts/</code>']]
+  ['flow',['Một scene chính <code>DramaGame</code>, SDK khởi tạo ngay khi mở game (chỉ đo, không sửa)','Đổi version thì gọi <code>Caching.ClearCache()</code>: người chơi tải lại mọi bundle sau mỗi bản cập nhật','331 prefab level tải qua Addressables']],
+  ['arch',['1.794 script, chỉ 2 module có asmdef, phần còn lại compile chung một khối','<code>AudioCtrl.Instance</code> gọi 1.615 lần, <code>DramaGameCtrl.Instance</code> 842 lần','File lớn: <code>Level_TileMatch</code> 3.918 dòng, <code>UIScreenMainMenu</code> 1.873 dòng','Rác: <code>ResourcesOld</code> 67 MB, PSD 140 MB trong <code>Scripts/</code>']]
 ];
 const OLIST = (() => { const c = {}; return OPT_DAYS.map(d => { const w = d[0], i = c[w] = (c[w]===undefined?0:c[w]+1);
   const date = new Date(wStart(w).getTime() + i*DAY);
