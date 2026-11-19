@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>Lộ trình tối ưu TS3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: một cột đọc dọc — hiện trạng → bảng số → 9 tuần (bấm mở từng ngày) → nguyên tắc */
+:root{
+  --bg:#f5f7f8; --surface:#ffffff; --fg:#14232b; --muted:#5b6d76; --line:#dbe3e7;
+  --accent:#0f7c86; --accent-soft:#e0f1f2; --today:#fff4d6; --today-line:#e2b23a;
+  --size:#7a4fd1; --ram:#c2410c; --perf:#0f7c86; --flow:#1d6fd1; --arch:#4d7c0f; --measure:#7c6f5a;
+  --f-body:"Be Vietnam Pro",system-ui,"Segoe UI",sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1a1f; --surface:#16252c; --fg:#e4eef1; --muted:#93a8b1; --line:#27404a;
+  --accent:#4cc3cc; --accent-soft:#183a40; --today:#3a3218; --today-line:#d6a632;
+  --size:#b394ff; --ram:#ff8a57; --perf:#4cc3cc; --flow:#6aa8ff; --arch:#9bd451; --measure:#c4b69c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a1f; --surface:#16252c; --fg:#e4eef1; --muted:#93a8b1; --line:#27404a;
+  --accent:#4cc3cc; --accent-soft:#183a40; --today:#3a3218; --today-line:#d6a632;
+  --size:#b394ff; --ram:#ff8a57; --perf:#4cc3cc; --flow:#6aa8ff; --arch:#9bd451; --measure:#c4b69c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:36px}
+h1{font-size:28px;line-height:1.2;margin:0;text-wrap:balance;font-weight:800}
+h2{font-size:19px;margin:0 0 12px;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lead{color:var(--muted);max-width:65ch;margin:8px 0 0}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.t-size{color:var(--size)}.t-ram{color:var(--ram)}.t-perf{color:var(--perf)}.t-flow{color:var(--flow)}.t-arch{color:var(--arch)}.t-measure{color:var(--measure)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+/* findings */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.pillar{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.pillar ul{margin:8px 0 0;padding-left:18px;color:var(--fg)}
+.pillar li{margin:3px 0}
+.num{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;font-weight:500}
+code{font-family:var(--f-mono);font-size:12.5px;background:var(--accent-soft);padding:1px 5px;border-radius:4px;word-break:break-word}
+/* metrics table */
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+tr:last-child td{border-bottom:0}
+td input{width:100%;min-width:70px;font:inherit;font-family:var(--f-mono);font-size:13px;padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+td input:focus,summary:focus-visible,input[type=checkbox]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.goal{font-family:var(--f-mono);font-size:13px;color:var(--accent);font-weight:500;white-space:nowrap}
+.hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+/* weeks */
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:14px}
+.phase{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface);font-size:13px}
+.phase b{display:block;font-size:14px}
+.phase span{color:var(--muted)}
+.phase.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.weeks{display:grid;gap:10px}
+details.week{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.week.now{border-color:var(--accent)}
+summary{cursor:pointer;list-style:none;padding:14px 16px;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center}
+summary::-webkit-details-marker{display:none}
+.wk{font-family:var(--f-mono);font-size:20px;font-weight:500;color:var(--accent);text-align:center}
+.wtitle{font-weight:700;min-width:0}
+.wsub{font-size:13px;color:var(--muted);font-weight:400}
+.prog{font-family:var(--f-mono);font-size:13px;color:var(--muted);white-space:nowrap}
+.days{border-top:1px solid var(--line);padding:4px 16px 14px}
+.out{font-size:13px;padding:10px 0 4px;color:var(--muted)}
+.out b{color:var(--fg)}
+.day{display:grid;grid-template-columns:22px 70px 1fr;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);align-items:start}
+.day:last-child{border-bottom:0}
+.day.today{background:var(--today);margin:0 -16px;padding-left:16px;padding-right:16px;border-left:3px solid var(--today-line)}
+.day input[type=checkbox]{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
+.dlabel{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.dlabel small{display:block;font-weight:400;color:var(--muted)}
+.dtask{min-width:0}
+.dtask p{margin:0}
+.dmeta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:5px;font-size:13px;color:var(--muted)}
+.day.done .dtask p{color:var(--muted);text-decoration:line-through}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.rule{border-left:3px solid var(--accent);padding:4px 0 4px 12px}
+.rule b{display:block}
+.rule span{color:var(--muted);font-size:14px}
+@media (max-width:520px){
+  summary{grid-template-columns:34px 1fr;}
+  .prog{grid-column:2}
+  .day{grid-template-columns:22px 1fr}
+  .dlabel{grid-column:2}
+  .dtask{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a href="../" style="color:var(--accent);font-size:14px;font-weight:600;text-decoration:none">← Kế hoạch 8 tuần</a>
+    <div class="eyebrow">Mốc song song với Kế hoạch 8 tuần · 19/11/2026 – 15/01/2027</div>
+    <h1>Lộ trình tối ưu Tricky Story 3</h1>
+    <p class="lead">Mỗi ngày làm một việc tối ưu khoảng 30–45 phút, không lấn vào task dự án. Chủ đề từng tuần đi theo phần "Học" của lộ trình chính: tuần học Profiler thì tối ưu CPU, tuần học Addressables thì tối ưu bộ nhớ. Mọi việc đều có số đo trước và sau.</p>
+    <div class="legend">
+      <span class="tag t-measure">Đo lường</span><span class="tag t-size">Dung lượng</span><span class="tag t-ram">Bộ nhớ</span><span class="tag t-perf">Hiệu năng</span><span class="tag t-flow">Luồng</span><span class="tag t-arch">Cấu trúc</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Hiện trạng (quét project ngày 19/11)</h2>
+    <div class="pillars">
+      <div class="pillar"><span class="tag t-size">Dung lượng</span><ul>
+        <li><code>Assets/Project/Resources</code> <span class="num">199 MB</span>, tất cả bị đóng vào APK</li>
+        <li>Strip Engine Code tắt, chưa đặt Managed Stripping cho Android</li>
+        <li>APK chung cho ARMv7 + ARM64</li>
+        <li><span class="num">183</span> ảnh max size ≥ 4096, <span class="num">~2.500</span> ảnh chưa có override Android</li>
+      </ul></div>
+      <div class="pillar"><span class="tag t-ram">Bộ nhớ</span><ul>
+        <li><span class="num">14.149</span> file âm thanh: stereo, Decompress On Load</li>
+        <li><span class="num">69</span> ảnh bật Read/Write (tốn gấp đôi RAM)</li>
+        <li><span class="num">0</span> SpriteAtlas</li>
+      </ul></div>
+      <div class="pillar"><span class="tag t-perf">Hiệu năng</span><ul>
+        <li><span class="num">574</span> lệnh <code>Debug.Log</code>, define <code>ENABLE_MYLOG</code> bật trên Android</li>
+        <li><span class="num">7</span> UI tạo chuỗi mới mỗi frame trong <code>Update()</code></li>
+        <li><span class="num">75</span> <code>Camera.main</code>, <span class="num">17</span> <code>FindObjectOfType</code>, <span class="num">9</span> <code>Update()</code> rỗng</li>
+        <li><span class="num">1.693</span> <code>new WaitForSeconds</code></li>
+      </ul></div>
+      <div class="pillar"><span class="tag t-flow">Luồng</span><ul>
+        <li>Một scene chính <code>DramaGame</code>: SDK (Firebase, Ads, IAP) khởi tạo ngay khi mở game</li>
+        <li>Đổi version thì gọi <code>Caching.ClearCache()</code>, nên người chơi phải tải lại mọi bundle sau mỗi bản cập nhật</li>
+        <li><span class="num">331</span> prefab level tải qua Addressables</li>
+      </ul></div>
+      <div class="pillar"><span class="tag t-arch">Cấu trúc</span><ul>
+        <li><span class="num">1.794</span> script, chỉ 2 module có asmdef, phần còn lại compile chung một khối</li>
+        <li><code>AudioCtrl.Instance</code> gọi <span class="num">1.615</span> lần, <code>DramaGameCtrl.Instance</code> <span class="num">842</span> lần</li>
+        <li>File lớn: <code>Level_TileMatch</code> <span class="num">3.918</span> dòng, <code>UIScreenMainMenu</code> <span class="num">1.873</span> dòng</li>
+        <li>Rác: <code>ResourcesOld</code> 67 MB, <code>IAP.zip</code> và PSD 140 MB nằm trong <code>Scripts/</code></li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bảng số đo</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Chỉ số</th><th>Cách đo</th><th>Trước</th><th>Mục tiêu</th><th>Sau</th></tr></thead>
+      <tbody id="metrics"></tbody>
+    </table></div>
+    <p class="hint">Luôn đo trên cùng một máy Android yếu, cùng màn chơi, bản build Development. Số bạn nhập chỉ lưu trong trình duyệt này. Mục tiêu là đề xuất, chỉnh lại sau khi có số "Trước".</p>
+  </section>
+
+  <section>
+    <h2>Từng tuần</h2>
+    <div class="phases" id="phases"></div>
+    <div class="weeks" id="weeks"></div>
+  </section>
+
+  <section>
+    <h2>Nguyên tắc</h2>
+    <div class="rules">
+      <div class="rule"><b>Dự án trước</b><span>Ngày nào task dự án có nguy cơ trễ thì bỏ việc tối ưu hôm đó. Đúng hạn là số 1.</span></div>
+      <div class="rule"><b>Không có số thì chưa xong</b><span>Mỗi việc ghi số trước/sau vào bảng. Không cải thiện thì hoàn tác.</span></div>
+      <div class="rule"><b>Thay đổi nhỏ, tách riêng</b><span>Mỗi lần đổi import settings hay PlayerSettings là một commit riêng, test trên máy thật rồi mới làm tiếp.</span></div>
+      <div class="rule"><b>Báo team khi đụng bundle</b><span>Đổi import settings sẽ build lại bundle Addressables, người chơi phải tải lại. Gom vào một đợt phát hành.</span></div>
+      <div class="rule"><b>Chặn tái phát</b><span>Sửa xong thì thêm luật tự động (AssetPostprocessor, test) để lỗi không quay lại.</span></div>
+      <div class="rule"><b>Hỏi trước khi xoá</b><span>Dọn file, đổi kiến trúc dùng chung: hỏi người phụ trách trước.</span></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const METRICS=[
+ ["Dung lượng tải (AAB/APK)","Build Report, kích thước file trên store","","−20%"],
+ ["Thời gian mở game → menu","Stopwatch log từ splash đến menu bấm được","","−20%"],
+ ["Thời gian vào màn (đã cache)","Bấm chơi → màn bấm được, 3 màn nặng","","−20%"],
+ ["RAM đỉnh ở màn nặng nhất","Memory Profiler, Total Committed","","−20%"],
+ ["Frame time ở màn nặng","Profiler trên máy thật, trung bình 30 giây","","≤ 16,6 ms"],
+ ["Rác bộ nhớ mỗi frame ở menu","Profiler, GC Alloc khi đứng yên","","0 B"],
+ ["Draw call ở menu","Frame Debugger","","−40%"],
+ ["Thời gian compile sau khi sửa 1 script","Bấm giờ từ lưu file đến Editor dùng được","","−30%"],
+];
+const W=[
+ {n:0,t:"Chọn máy đo, ghi số đầu tiên",d:"19/11–22/11",learn:"Hiểu 6 tiêu chí",out:"Có máy test cố định và số dung lượng ban đầu",days:[
+  ["T5","19/11","Chọn 1 máy Android yếu làm máy đo cố định, cài bản build Development.","measure","Máy đo cố định"],
+  ["T6","20/11","Build bản release hiện tại, ghi dung lượng AAB/APK và top 20 asset nặng (Build Report).","size","Số dung lượng \"Trước\""],
+  ["T7–CN","21–22/11","(Tuỳ chọn) Chụp lại PlayerSettings và QualitySettings Android hiện tại để so sánh về sau.","measure","Ảnh chụp cấu hình gốc"]]},
+ {n:1,t:"Vẽ luồng và đo baseline",d:"23/11–27/11",learn:"Kiến trúc code dự án",out:"Bảng số \"Trước\" đủ 8 dòng, sơ đồ 2 luồng chính",days:[
+  ["T2","23/11","Bấm giờ compile sau khi sửa 1 script. Vẽ sơ đồ ai gọi AudioCtrl, DramaGameCtrl, UICtrl.","arch","Số compile + sơ đồ phụ thuộc"],
+  ["T3","24/11","Vẽ luồng mở game: splash → khởi tạo Firebase, Ads, IAP, config → menu. Gắn Stopwatch log từng bước.","flow","Sơ đồ luồng mở game có số giây"],
+  ["T4","25/11","Vẽ luồng vào màn: chọn level → tải Addressables → Instantiate → bấm được. Bấm giờ 3 màn nặng.","flow","Sơ đồ luồng vào màn có số giây"],
+  ["T5","26/11","Profiler trên máy thật: RAM, frame time, GC Alloc ở menu và 2 màn nặng nhất.","measure","Số RAM và FPS \"Trước\""],
+  ["T6","27/11","Điền đủ bảng số đo, gửi kèm cập nhật tuần cho sếp.","measure","Bảng \"Trước\" hoàn chỉnh"]]},
+ {n:2,t:"Dọn chỗ tốn CPU và rác bộ nhớ",d:"30/11–04/12",learn:"Unity Profiler",out:"5 chỗ chậm đã biết, 3 chỗ đã sửa · Check-in #1",days:[
+  ["T2","30/11","Profiler CPU: ghi top 5 hàm tốn nhất ở menu và màn nặng.","perf","Danh sách 5 chỗ chậm"],
+  ["T3","01/12","Tắt log trong bản release: bọc Debug.Log bằng [Conditional] hoặc bỏ ENABLE_MYLOG khỏi release.","perf","574 lệnh log không chạy ở release"],
+  ["T4","02/12","Sửa 7 UI tạo chuỗi mỗi frame (UIBoosterPack, UIResourceStars…): chỉ đổi text khi giá trị đổi.","perf","GC Alloc ở menu giảm"],
+  ["T5","03/12","Cache Camera.main, xoá 9 Update() rỗng, rà 17 FindObjectOfType xem có chạy lặp không.","perf","Frame time đo lại"],
+  ["T6","04/12","Check-in #1: báo 5 chỗ chậm và số đã sửa.","measure","Sếp thấy số"]]},
+ {n:3,t:"Bộ nhớ: âm thanh, ảnh, bundle",d:"07/12–11/12",learn:"Bộ nhớ, Addressables, pooling",out:"RAM đỉnh giảm, người chơi không phải tải lại bundle khi update",days:[
+  ["T2","07/12","SFX: bật Force To Mono, sample rate 22 kHz. Làm thử 1 thư mục, nghe lại, rồi áp toàn bộ.","ram","RAM âm thanh trước/sau"],
+  ["T3","08/12","Nhạc nền dài: chuyển sang Streaming. Đo lại RAM.","ram","RAM đỉnh giảm"],
+  ["T4","09/12","Tắt Read/Write 69 ảnh (tìm GetPixel trong code trước), hạ 183 ảnh ≥ 4096 xuống 2048 nếu nhìn không khác.","ram","RAM texture giảm"],
+  ["T5","10/12","Kiểm tra Addressables có Release khi rời màn không (Memory Profiler trước và sau 3 màn liên tiếp).","ram","Không rò RAM giữa các màn"],
+  ["T6","11/12","Thay Caching.ClearCache() khi đổi version bằng Addressables.CleanBundleCache(): chỉ xoá bundle cũ.","flow","Bản update không bắt tải lại toàn bộ"]]},
+ {n:4,t:"Tối ưu sâu một chỗ + chặn tái phát",d:"14/12–18/12",learn:"AI + kiểm thử tự động",out:"Bảng trước/sau giữa kỳ · Check-in #2",days:[
+  ["T2","14/12","Đo lại cả bảng. Chọn chỉ số còn xa mục tiêu nhất để đào sâu.","measure","Bảng giữa kỳ"],
+  ["T3","15/12","Viết AssetPostprocessor tự áp chuẩn: ảnh Android ASTC, tối đa 2048; SFX mono.","size","Asset mới tự đúng chuẩn"],
+  ["T4","16/12","Nhờ AI viết EditMode test quét asset sai chuẩn và test tải/giải phóng 1 level Addressables. Tự kiểm lại.","measure","2 bài test chạy được"],
+  ["T5","17/12","Đào sâu chỉ số đã chọn (thường là thời gian vào màn): dời khởi tạo nặng sang sau khi màn hiện.","flow","Số trước/sau của chỉ số đó"],
+  ["T6","18/12","Check-in #2 với bảng trước/sau.","measure","Ít nhất 1 chỉ số tốt hơn 20%"]]},
+ {n:5,t:"Dung lượng build + build tự động",d:"21/12–25/12",learn:"Công cụ Editor, build tự động",out:"Mỗi bản build tự in dung lượng, AAB nhỏ hơn",days:[
+  ["T2","21/12","Managed Stripping = Medium, bật Strip Engine Code. Thêm link.xml cho Firebase/IAP nếu crash. Test luồng mua và quảng cáo.","size","Dung lượng trước/sau"],
+  ["T3","22/12","Chuyển sang AAB (hoặc tách APK theo kiến trúc). Ghi dung lượng tải thật trên store.","size","Dung lượng tải giảm"],
+  ["T4","23/12","Script build in dung lượng và top 20 asset nặng sau mỗi lần build, so với bản trước.","measure","Báo cáo dung lượng tự động"],
+  ["T5","24/12","Dời 1 nhóm asset trong Resources chỉ dùng theo màn sang Addressables.","size","Resources nhỏ đi"],
+  ["T6","25/12","Đưa công cụ kiểm tra asset cho game designer và hoạ sĩ dùng thử.","arch","Có người dùng tool"]]},
+ {n:6,t:"Hình ảnh mobile: draw call, canvas",d:"28/12–01/01",learn:"Tối ưu hình ảnh mobile",out:"Draw call menu giảm · Check-in #3",days:[
+  ["T2","28/12","Frame Debugger ở menu: đếm draw call. Tạo SpriteAtlas cho UI chung (nút, icon, popup).","perf","Draw call menu trước/sau"],
+  ["T3","29/12","Tách canvas: phần tĩnh riêng, phần có số chạy (timer, tiền) riêng. Tắt Raycast Target ở ảnh không bấm.","perf","Ít rebuild canvas hơn"],
+  ["T4","30/12","Atlas cho 1–2 màn nặng nhất; xem overdraw (nền chồng nhau, particle).","perf","Draw call màn nặng giảm"],
+  ["T5","31/12","Đo lại FPS và draw call; check-in #3.","measure","Số trước/sau"],
+  ["T6","01/01","Nghỉ Tết Dương lịch.","",""]]},
+ {n:7,t:"Cấu trúc: compile nhanh, ít phụ thuộc",d:"04/01–08/01",learn:"Kiến trúc mở rộng",out:"Compile nhanh hơn, quy chuẩn tối ưu cho team",days:[
+  ["T2","04/01","Tách asmdef: Core, UI, Levels, Minigames, Editor. Đo lại thời gian compile.","arch","Compile trước/sau"],
+  ["T3","05/01","Giảm gọi thẳng AudioCtrl.Instance: thêm API nhỏ hoặc event, áp cho code mới và 1 module mẫu. Không viết lại toàn bộ.","arch","1 module ít phụ thuộc"],
+  ["T4","06/01","Chuyển giá trị hard-code của 1 module sang ScriptableObject; tách phần đang đụng trong UIScreenMainMenu.","arch","File nhỏ hơn, dễ chỉnh"],
+  ["T5","07/01","Dọn rác (hỏi team trước): ResourcesOld, IAP.zip, PSD lớn trong Scripts/, scene test.","arch","Project nhẹ, import nhanh"],
+  ["T6","08/01","Viết \"Quy chuẩn tối ưu\" 1 trang: chuẩn ảnh, âm thanh, code Update, Addressables.","arch","Team có checklist"]]},
+ {n:8,t:"Chứng minh bằng số",d:"11/01–15/01",learn:"Trình bày kết quả",out:"Bảng trước/sau cuối kỳ · Check-in #4",days:[
+  ["T2","11/01","Đo lại cả bảng trên cùng máy, cùng điều kiện như tuần 1.","measure","Bảng \"Sau\" hoàn chỉnh"],
+  ["T3","12/01","Chọn 3 con số mạnh nhất, vẽ biểu đồ trước/sau.","measure","3 biểu đồ"],
+  ["T4","13/01","Làm slide \"Tối ưu TS3: từ số đo đến quy chuẩn\".","measure","Slide"],
+  ["T5","14/01","Chia sẻ team; đề xuất danh sách việc tối ưu tiếp theo.","arch","Backlog tối ưu"],
+  ["T6","15/01","Check-in #4: nộp bảng số.","measure","Xong lộ trình"]]},
+];
+const PH=[["Tuần 0–1","Đo","Biết đang ở đâu",0,1],["Tuần 2–3","Sửa dễ","CPU, rác bộ nhớ, RAM",2,3],["Tuần 4–6","Đào sâu","Chặn tái phát, build, hình ảnh",4,6],["Tuần 7–8","Bền vững","Cấu trúc, quy chuẩn, trình bày",7,8]];
+const TAG={size:"Dung lượng",ram:"Bộ nhớ",perf:"Hiệu năng",flow:"Luồng",arch:"Cấu trúc",measure:"Đo lường"};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// metrics
+const mv=store.get("ts3opt-metrics",{});
+document.getElementById("metrics").innerHTML=METRICS.map((m,i)=>`<tr><td><b>${m[0]}</b></td><td>${m[1]}</td>
+ <td><input id="m${i}b" aria-label="${m[0]} trước" value="${esc(mv["m"+i+"b"]||"")}"></td><td class="goal">${m[3]}</td>
+ <td><input id="m${i}a" aria-label="${m[0]} sau" value="${esc(mv["m"+i+"a"]||"")}"></td></tr>`).join("");
+document.getElementById("metrics").addEventListener("input",e=>{if(e.target.id){mv[e.target.id]=e.target.value;store.set("ts3opt-metrics",mv)}});
+
+// today
+const now=new Date(); const yr=d=>{const [dd,mm]=d.split("/").map(Number);return new Date(mm>=11?2026:2027,mm-1,dd)};
+const same=(a,b)=>a.toDateString()===b.toDateString();
+const range=w=>{const [a,b]=w.d.split("–");return [yr(a),yr(b)]};
+let curWeek=W.findIndex(w=>{const [a,b]=range(w);b.setHours(23,59);return now>=a&&now<=b});
+if(curWeek<0)curWeek=now<range(W[0])[0]?0:-1;
+
+document.getElementById("phases").innerHTML=PH.map(p=>`<div class="phase${curWeek>=p[3]&&curWeek<=p[4]?" now":""}"><span>${p[0]}</span><b>${p[1]}</b><span>${p[2]}</span></div>`).join("");
+
+const done=store.get("ts3opt-done",{});
+function dayIsToday(day){const [s,e]=day[1].split("–");if(!e)return same(yr(s),now);const a=yr(s),b=yr(e.includes("/")?e:e+"/"+s.split("/")[1]);b.setHours(23,59);return now>=a&&now<=b}
+function render(){
+ const open=new Set([...document.querySelectorAll("details.week[open]")].map(d=>d.dataset.n));
+ document.getElementById("weeks").innerHTML=W.map(w=>{
+  const real=w.days.filter(d=>d[3]);const c=real.filter((d,i)=>done[w.n+"-"+w.days.indexOf(d)]).length;
+  const isOpen=open.size?open.has(String(w.n)):w.n===curWeek;
+  return `<details class="week${w.n===curWeek?" now":""}" data-n="${w.n}"${isOpen?" open":""}>
+   <summary><span class="wk">${w.n}</span><span class="wtitle">${w.t}<br><span class="wsub">${w.d} · Học: ${w.learn}</span></span><span class="prog">${c}/${real.length}</span></summary>
+   <div class="days"><div class="out">Kết quả tuần: <b>${w.out}</b></div>
+   ${w.days.map((d,i)=>{const k=w.n+"-"+i,ok=!!done[k];return `<div class="day${ok?" done":""}${dayIsToday(d)?" today":""}">
+     ${d[3]?`<input type="checkbox" id="c${k}" data-k="${k}"${ok?" checked":""} aria-label="Xong: ${esc(d[2])}">`:"<span></span>"}
+     <label class="dlabel" for="c${k}">${d[0]}<small>${d[1]}</small></label>
+     <div class="dtask"><p>${esc(d[2])}</p>${d[3]?`<div class="dmeta"><span class="tag t-${d[3]}">${TAG[d[3]]}</span><span>Đạt: ${esc(d[4])}</span></div>`:""}</div></div>`}).join("")}
+   </div></details>`}).join("");
+}
+render();
+document.getElementById("weeks").addEventListener("change",e=>{const k=e.target.dataset.k;if(!k)return;done[k]=e.target.checked;store.set("ts3opt-done",done);render()});
+</script>
+</body>
+</html>
